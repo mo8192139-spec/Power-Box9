@@ -240,6 +240,27 @@ export const defaultSiteContent: SiteContent = {
         photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&h=150&q=80",
         rating: 5,
         review: "The perfect gift! Sent this to my brother in college and he was thrilled. Quality snacks and beautiful presentation with the greeting card."
+      },
+      {
+        id: "david",
+        name: "David Thompson",
+        photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&h=150&q=80",
+        rating: 5,
+        review: "Ordered for my team at work. Everyone loved the variety - from healthy options to tasty treats. Will definitely order again!"
+      },
+      {
+        id: "jessica",
+        name: "Jessica Martinez",
+        photo: "https://images.pexels.com/photos/1181695/pexels-photo-1181695.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
+        rating: 5,
+        review: "Exceeded my expectations! The box is beautifully packaged and the snacks are high quality. Perfect for busy days when I need quick energy."
+      },
+      {
+        id: "robert",
+        name: "Robert Wilson",
+        photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&h=150&q=80",
+        rating: 5,
+        review: "Fantastic service from start to finish. The snacks arrived quickly and were exactly as described. Great for keeping in the car for long trips!"
       }
     ]
   },
