@@ -31,12 +31,14 @@ interface AdminSidebarProps {
 }
 
 const sidebarSections = [
+  { id: "seo", label: "SEO Settings", icon: Search, description: "Meta title, description, and keywords" },
   { id: "hero", label: "Hero Section", icon: Home, description: "Main title, pricing, and hero image" },
   { id: "benefits", label: "Benefits", icon: Star, description: "Product benefits and features" },
   { id: "trust", label: "Trust Section", icon: Shield, description: "Walmart branding and trust indicators" },
   { id: "gallery", label: "Gallery", icon: Image, description: "Product image gallery" },
   { id: "reviews", label: "Reviews", icon: MessageCircle, description: "Customer reviews and testimonials" },
   { id: "finalCTA", label: "Final CTA", icon: Megaphone, description: "Final call-to-action section" },
+  { id: "popups", label: "Popups", icon: Zap, description: "Button-triggered and exit intent popups" },
   { id: "footer", label: "Footer", icon: Link, description: "Social media links and footer content" },
 ];
 
