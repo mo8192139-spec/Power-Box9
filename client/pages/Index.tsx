@@ -37,32 +37,59 @@ import { StickyCTA } from "@/components/StickyCTA";
 import { CustomerReviews } from "@/components/CustomerReviews";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { useExitIntent } from "@/hooks/use-exit-intent";
+import { ContentStorage } from "@/lib/content-storage";
+import { SiteContent } from "@shared/admin-content-types";
+
+// Icon mapping
+const iconMap = {
+  Package,
+  Gift,
+  Zap,
+  Users,
+  Heart,
+  BadgeCheck,
+  Shield,
+  Star,
+  Check,
+  Truck,
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+};
 
 export default function Index() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showExitIntent, setShowExitIntent] = useState(false);
-  // Professional pricing
-  const [salePrice] = useState(31.95);
+  const [content, setContent] = useState<SiteContent | null>(null);
 
-  const walmartUrl =
-    "https://www.walmart.com/ip/Healthy-Snack-Box-Tasty-Nutrient-Rich-Variety-42-Count-by-Gift-A-Snack/14479818419?selectedSellerId=16964&selectedOfferId=BEA9DA42A8853A4C927EECB4D702F303&clickid=3PE2sMyDBxycW1s0QQThKWW7Ukp2AmR-AQ%3AGxo0&irgwc=1&sourceid=imp_3PE2sMyDBxycW1s0QQThKWW7Ukp2AmR-AQ%3AGxo0&veh=aff&wmlspartner=imp_5610446&affiliates_ad_id=565706&campaign_id=9383&sharedid=mp_16964_2016489964_knpf1_4mtlu49_BEA9DA42A8853A4C927EECB4D702F303&utm_source=landing&utm_medium=cta&utm_campaign=snackbox";
+  // Load content from storage
+  useEffect(() => {
+    const storedContent = ContentStorage.getSiteContent();
+    setContent(storedContent);
+  }, []);
 
-  const productImages = [
-    "https://cdn.builder.io/api/v1/image/assets%2F84282e2d620247d2b8d8845fda2c790e%2F79d471e5bc56457eb2c3b1c3eb6586ae?format=webp&width=800", // Main Energy Care Package
-    "https://cdn.builder.io/api/v1/image/assets%2F84282e2d620247d2b8d8845fda2c790e%2F05b5599b733643de9ed02db80950feb9?format=webp&width=800", // Inside box view
-    "https://cdn.builder.io/api/v1/image/assets%2F84282e2d620247d2b8d8845fda2c790e%2Fec2c685b6b9d438f97083ea2cdb4458b?format=webp&width=800", // Outside box view
-  ];
+  // Don't render until content is loaded
+  if (!content) {
+    return <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading content...</p>
+      </div>
+    </div>;
+  }
+
+  const { hero, benefits, trust, gallery, reviews, finalCTA, footer } = content;
 
   const handleBuyClick = (location: string) => {
-    // Track conversion event and redirect directly
     console.log(`Buy clicked from: ${location}`);
     handleProceedToWalmart();
   };
 
   // Exit intent detection
   useExitIntent({
-    enabled: !showExitIntent && !isModalOpen, // Only show if not already shown and modal is closed
+    enabled: !showExitIntent && !isModalOpen,
     sensitivity: 20,
     delayInMs: 100,
     onExitIntent: () => {
@@ -76,16 +103,13 @@ export default function Index() {
 
   const handleSubscribe = (email?: string) => {
     console.log("Newsletter subscription", { email });
-    // Here you could track the email signup
     setShowExitIntent(false);
-    // You could show a thank you message or redirect
   };
 
   const handleProceedToWalmart = () => {
-    // Actually redirect to Walmart
     console.log("Proceeding to Walmart checkout");
     const link = document.createElement("a");
-    link.href = walmartUrl;
+    link.href = hero.walmartUrl;
     link.target = "_blank";
     link.rel = "noopener noreferrer nofollow";
     link.click();
@@ -103,12 +127,12 @@ export default function Index() {
   };
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % productImages.length);
+    setCurrentImageIndex((prev) => (prev + 1) % gallery.images.length);
   };
 
   const prevImage = () => {
     setCurrentImageIndex(
-      (prev) => (prev - 1 + productImages.length) % productImages.length,
+      (prev) => (prev - 1 + gallery.images.length) % gallery.images.length,
     );
   };
 
@@ -140,8 +164,7 @@ export default function Index() {
               {/* Left Column - Content */}
               <div>
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
-                  Nutritious Snack Box with Breakfast Bars and Delicious Chips |
-                  Gift A Snack (42 Count)
+                  {hero.title}
                 </h1>
 
                 {/* Rating */}
@@ -150,15 +173,15 @@ export default function Index() {
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`h-4 w-4 sm:h-5 sm:w-5 ${i < 4 || (i === 4 && i < 4.6) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                        className={`h-4 w-4 sm:h-5 sm:w-5 ${i < Math.floor(hero.rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
                       />
                     ))}
                   </div>
                   <span className="text-base sm:text-lg font-semibold text-gray-700">
-                    4.6 ⭐
+                    {hero.rating} ⭐
                   </span>
                   <span className="text-sm sm:text-base text-gray-600">
-                    from 23 reviews
+                    from {hero.reviewCount} reviews
                   </span>
                 </div>
 
@@ -166,37 +189,17 @@ export default function Index() {
                 <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                     <PricingDisplay
-                      salePrice={salePrice}
+                      salePrice={hero.salePrice}
                       size="lg"
                       className="[&>div:first-child]:flex-col sm:[&>div:first-child]:flex-row [&>div:first-child]:items-start sm:[&>div:first-child]:items-center [&>div:first-child]:gap-2 sm:[&>div:first-child]:gap-3"
                     />
                     <div className="flex flex-col">
                       <span className="text-xs sm:text-sm text-green-600 font-medium flex items-center gap-1">
-                        <svg
-                          className="w-3 h-3"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        <Check className="w-3 h-3" />
                         Fresh & high-quality snacks
                       </span>
                       <span className="text-xs sm:text-sm text-blue-600 font-medium flex items-center gap-1">
-                        <svg
-                          className="w-3 h-3"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        <Check className="w-3 h-3" />
                         Walmart+ offer eligible
                       </span>
                     </div>
@@ -213,17 +216,7 @@ export default function Index() {
                       </span>
                     </div>
                     <span className="text-sm sm:text-base text-red-600 font-medium sm:ml-auto flex items-center gap-1">
-                      <svg
-                        className="w-4 h-4 text-yellow-500"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <Zap className="w-4 h-4 text-yellow-500" />
                       Limited stock available
                     </span>
                   </div>
@@ -262,8 +255,8 @@ export default function Index() {
                 >
                   <div className="backdrop-blur-xl bg-white/20 rounded-3xl p-8 shadow-2xl border border-white/30">
                     <img
-                      src={productImages[0]}
-                      alt="Nutritious Snack Box with Breakfast Bars and Delicious Chips - 42 Count"
+                      src={hero.mainImage}
+                      alt={hero.title}
                       className="w-full h-auto rounded-2xl shadow-lg"
                       loading="eager"
                       width={800}
@@ -287,111 +280,65 @@ export default function Index() {
         >
           <div className="max-w-6xl mx-auto">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 mb-8 sm:mb-12 lg:mb-16">
-              Why Choose Our Nutritious Snack Box?
+              {benefits.sectionTitle}
             </h2>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: Package,
-                  title: "Variety of Snacks",
-                  desc: "Perfect mix of breakfast bars and savory snacks for any time of day",
-                  color: "blue",
-                  image:
-                    "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F4d9abe9f679440fcb3470285697707f4?format=webp&width=800",
-                },
-                {
-                  icon: Gift,
-                  title: "High-End Packaging",
-                  desc: "Attractive and professional packaging that makes a great impression",
-                  color: "purple",
-                  image:
-                    "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F6305c43f8b6449fc8926c50b002e25fe?format=webp&width=800",
-                },
-                {
-                  icon: Zap,
-                  title: "Grab-and-Go Convenience",
-                  desc: "Individually packaged snacks perfect for busy lifestyles",
-                  color: "green",
-                  image:
-                    "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F26b950db7e9644baa7113c5a0046d0fa?format=webp&width=800",
-                },
-                {
-                  icon: Users,
-                  title: "Suitable for All Ages",
-                  desc: "Perfect for adults, teens, and college students alike",
-                  color: "orange",
-                  image:
-                    "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2Fa7c068e933744309b8f41ed0726156a2?format=webp&width=800",
-                },
-                {
-                  icon: Heart,
-                  title: "Heartwarming Greeting Card",
-                  desc: "Comes with a special greeting card to show you care",
-                  color: "red",
-                  image:
-                    "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F19d8d6717d2a4dc6b633c9494573527a?format=webp&width=800",
-                },
-                {
-                  icon: BadgeCheck,
-                  title: "42 Count Value",
-                  desc: "Generous quantity ensuring lasting satisfaction and value",
-                  color: "indigo",
-                  image:
-                    "https://cdn.builder.io/api/v1/image/assets%2F79b7dfd5cb0f4ca0b96e836c27c6ef40%2F74bff8b15ba640b1acf1428f6b9b71b9?format=webp&width=800",
-                },
-              ].map((benefit, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{ scale: 1.02 }}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.6 }}
-                  className="relative bg-white rounded-2xl shadow-lg border-2 hover:shadow-2xl transition-all duration-500 overflow-hidden"
-                  style={{ borderColor: "#007BFF" }}
-                >
-                  {/* Product Image - Full height of upper portion */}
-                  <div className="relative h-64 group overflow-hidden">
-                    <img
-                      src={benefit.image}
-                      alt={benefit.title}
-                      className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                    {/* Dark overlay on hover */}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-25 transition-all duration-500"></div>
-
-                    {/* Icon positioned in top-right corner on image */}
-                    <div className="absolute top-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg z-10">
-                      <benefit.icon
-                        className={`h-6 w-6 ${
-                          benefit.color === "blue"
-                            ? "text-blue-600"
-                            : benefit.color === "purple"
-                              ? "text-purple-600"
-                              : benefit.color === "green"
-                                ? "text-green-600"
-                                : benefit.color === "orange"
-                                  ? "text-orange-600"
-                                  : benefit.color === "red"
-                                    ? "text-red-600"
-                                    : "text-indigo-600"
-                        }`}
+              {benefits.benefits.map((benefit, index) => {
+                const Icon = iconMap[benefit.iconName as keyof typeof iconMap] || Package;
+                
+                return (
+                  <motion.div
+                    key={benefit.id}
+                    whileHover={{ scale: 1.02 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.6 }}
+                    className="relative bg-white rounded-2xl shadow-lg border-2 hover:shadow-2xl transition-all duration-500 overflow-hidden"
+                    style={{ borderColor: "#007BFF" }}
+                  >
+                    {/* Product Image */}
+                    <div className="relative h-64 group overflow-hidden">
+                      <img
+                        src={benefit.image}
+                        alt={benefit.title}
+                        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                        loading="lazy"
                       />
-                    </div>
-                  </div>
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-25 transition-all duration-500"></div>
 
-                  {/* Text content at bottom */}
-                  <div className="p-6 text-center">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3 leading-tight">
-                      {benefit.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed text-sm">
-                      {benefit.desc}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
+                      {/* Icon positioned in top-right corner on image */}
+                      <div className="absolute top-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg z-10">
+                        <Icon
+                          className={`h-6 w-6 ${
+                            benefit.color === "blue"
+                              ? "text-blue-600"
+                              : benefit.color === "purple"
+                                ? "text-purple-600"
+                                : benefit.color === "green"
+                                  ? "text-green-600"
+                                  : benefit.color === "orange"
+                                    ? "text-orange-600"
+                                    : benefit.color === "red"
+                                      ? "text-red-600"
+                                      : "text-indigo-600"
+                          }`}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Text content at bottom */}
+                    <div className="p-6 text-center">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3 leading-tight">
+                        {benefit.title}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed text-sm">
+                        {benefit.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* CTA after Benefits */}
@@ -428,39 +375,39 @@ export default function Index() {
                     </div>
                   </div>
                   <h3 className="text-xl font-bold mb-2">
-                    Official Walmart Seller
+                    {trust.walmartTitle}
                   </h3>
                   <p className="text-blue-100">
-                    Secure checkout and fast delivery
+                    {trust.walmartDescription}
                   </p>
                 </div>
 
                 {/* Seller Rating */}
                 <div className="text-center">
                   <div className="bg-white/20 backdrop-blur rounded-xl p-6">
-                    <h3 className="text-2xl font-bold mb-2">Pro Seller</h3>
+                    <h3 className="text-2xl font-bold mb-2">{trust.sellerTitle}</h3>
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <div className="flex">
-                        {/* 4 full stars */}
-                        {[...Array(4)].map((_, i) => (
+                        {[...Array(Math.floor(trust.sellerRating))].map((_, i) => (
                           <Star
                             key={i}
                             className="h-5 w-5 text-yellow-400 fill-current"
                           />
                         ))}
-                        {/* 1 partially filled star (75%) */}
-                        <div className="relative">
-                          <Star className="h-5 w-5 text-gray-300" />
-                          <div
-                            className="absolute inset-0 overflow-hidden"
-                            style={{ width: "75%" }}
-                          >
-                            <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                        {trust.sellerRating % 1 !== 0 && (
+                          <div className="relative">
+                            <Star className="h-5 w-5 text-gray-300" />
+                            <div
+                              className="absolute inset-0 overflow-hidden"
+                              style={{ width: `${(trust.sellerRating % 1) * 100}%` }}
+                            >
+                              <Star className="h-5 w-5 text-yellow-400 fill-current" />
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
-                    <p className="text-blue-100">from 570 reviews</p>
+                    <p className="text-blue-100">from {trust.sellerReviewCount} reviews</p>
                   </div>
                 </div>
 
@@ -470,10 +417,10 @@ export default function Index() {
                     <Shield className="h-8 w-8 text-white" />
                   </div>
                   <h3 className="text-xl font-bold mb-2">
-                    Free 90-Day Returns
+                    {trust.returnsTitle}
                   </h3>
                   <p className="text-blue-100">
-                    Shop with confidence - easy returns
+                    {trust.returnsDescription}
                   </p>
                 </div>
               </div>
@@ -504,20 +451,20 @@ export default function Index() {
         >
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-16">
-              See What's Inside Your Box
+              {gallery.sectionTitle}
             </h2>
 
             <div className="grid md:grid-cols-3 gap-8">
-              {productImages.map((image, index) => (
+              {gallery.images.map((image, index) => (
                 <motion.div
-                  key={index}
+                  key={image.id}
                   whileHover={{ scale: 1.05 }}
                   onClick={handleCardClick}
                   className="group relative overflow-hidden rounded-2xl shadow-xl cursor-pointer"
                 >
                   <img
-                    src={image}
-                    alt={`Product view ${index + 1}`}
+                    src={image.url}
+                    alt={image.alt}
                     className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                     loading="lazy"
                     width={800}
@@ -526,11 +473,7 @@ export default function Index() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   <div className="absolute bottom-4 left-4 text-white">
                     <h3 className="font-semibold text-lg">
-                      {index === 0
-                        ? "Complete Collection"
-                        : index === 1
-                          ? "Inside View"
-                          : "Beautiful Packaging"}
+                      {image.title}
                     </h3>
                   </div>
                 </motion.div>
@@ -572,17 +515,7 @@ export default function Index() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="inline-flex items-center gap-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-semibold mb-4"
               >
-                <svg
-                  className="w-5 h-5 text-orange-500"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <Zap className="w-5 h-5 text-orange-500" />
                 <span>Bestseller - Limited Time Offer</span>
               </motion.div>
 
@@ -592,7 +525,7 @@ export default function Index() {
                 transition={{ duration: 0.8, delay: 0.6 }}
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight"
               >
-                Ready to Fuel Your Day?
+                {finalCTA.sectionTitle}
               </motion.h2>
 
               <motion.p
@@ -601,7 +534,7 @@ export default function Index() {
                 transition={{ duration: 0.8, delay: 0.8 }}
                 className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto"
               >
-                Get your 42-count nutritious snack box today!
+                {finalCTA.sectionDescription}
               </motion.p>
             </div>
 
@@ -615,7 +548,7 @@ export default function Index() {
                 className="text-center lg:text-left"
               >
                 <img
-                  src={productImages[0]}
+                  src={finalCTA.productImage}
                   alt="Nutritious Snack Box"
                   className="w-full max-w-md mx-auto lg:mx-0 rounded-2xl shadow-2xl"
                   loading="lazy"
@@ -636,7 +569,7 @@ export default function Index() {
                   {/* Price at Top */}
                   <div className="text-center mb-6">
                     <PricingDisplay
-                      salePrice={salePrice}
+                      salePrice={hero.salePrice}
                       size="lg"
                       className="[&>div:first-child>span:last-child]:text-4xl sm:[&>div:first-child>span:last-child]:text-5xl [&>div:first-child>span:last-child]:font-bold [&>div:first-child>span:last-child]:text-green-600"
                     />
@@ -644,13 +577,7 @@ export default function Index() {
 
                   {/* Benefits with Checkmarks */}
                   <div className="space-y-3">
-                    {[
-                      "42 premium snacks included",
-                      "Fresh & high-quality snacks from top brands",
-                      "Perfect for gifting or office sharing",
-                      "Fast & reliable delivery nationwide",
-                      "Greeting card included",
-                    ].map((benefit, index) => (
+                    {finalCTA.benefits.map((benefit, index) => (
                       <div key={index} className="flex items-center gap-3">
                         <div className="bg-green-100 rounded-full p-1 flex-shrink-0">
                           <Check className="h-4 w-4 text-green-600" />
@@ -710,71 +637,27 @@ export default function Index() {
               </a>
             </div>
             <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8">
-              {/* Facebook */}
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transform hover:scale-110 transition-all duration-300"
-                aria-label="Follow us on Facebook"
-              >
-                <Facebook className="h-8 w-8" />
-              </a>
-
-              {/* Instagram */}
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-pink-400 transform hover:scale-110 transition-all duration-300"
-                aria-label="Follow us on Instagram"
-              >
-                <Instagram className="h-8 w-8" />
-              </a>
-
-              {/* Twitter */}
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-blue-400 transform hover:scale-110 transition-all duration-300"
-                aria-label="Follow us on Twitter"
-              >
-                <Twitter className="h-8 w-8" />
-              </a>
-
-              {/* YouTube */}
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-red-400 transform hover:scale-110 transition-all duration-300"
-                aria-label="Subscribe to our YouTube channel"
-              >
-                <Youtube className="h-8 w-8" />
-              </a>
-
-              {/* TikTok - Using a generic icon since TikTok isn't in lucide-react */}
-              <a
-                href="https://tiktok.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transform hover:scale-110 transition-all duration-300"
-                aria-label="Follow us on TikTok"
-              >
-                <svg
-                  className="h-8 w-8"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-.04-.1z" />
-                </svg>
-              </a>
+              {footer.socialLinks.map((socialLink) => {
+                const Icon = iconMap[socialLink.iconName as keyof typeof iconMap] || Facebook;
+                
+                return (
+                  <a
+                    key={socialLink.id}
+                    href={socialLink.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transform hover:scale-110 transition-all duration-300"
+                    aria-label={`Follow us on ${socialLink.platform}`}
+                  >
+                    <Icon className="h-8 w-8" />
+                  </a>
+                );
+              })}
             </div>
           </div>
         </footer>
 
-        {/* Enhanced Product Modal - Fixed 3-Part Layout */}
+        {/* Enhanced Product Modal */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogPortal>
             <DialogOverlay />
@@ -794,12 +677,10 @@ export default function Index() {
                 <div className="relative flex-shrink-0 bg-white border-b border-gray-200 p-3 sm:p-6">
                   <DialogHeader>
                     <DialogTitle className="text-lg sm:text-2xl font-bold text-gray-900 leading-tight pr-10 sm:pr-12">
-                      Nutritious Snack Box with Breakfast Bars and Delicious
-                      Chips | Gift A Snack (42 Count)
+                      {hero.title}
                     </DialogTitle>
                     <DialogDescription className="text-sm sm:text-sm text-gray-600 mt-2 pr-8 sm:pr-0">
-                      View detailed product information, pricing, and purchase
-                      options for this 42-piece snack collection.
+                      View detailed product information, pricing, and purchase options.
                     </DialogDescription>
                   </DialogHeader>
 
@@ -817,7 +698,7 @@ export default function Index() {
                 <div
                   className="flex-1 overflow-y-auto px-3 py-4 sm:p-6"
                   style={{
-                    maxHeight: "calc(100vh - 180px - 140px)", // Account for header and footer on mobile
+                    maxHeight: "calc(100vh - 180px - 140px)",
                     WebkitOverflowScrolling: "touch",
                   }}
                 >
@@ -825,8 +706,8 @@ export default function Index() {
                   <div className="relative mb-4 sm:mb-6">
                     <div className="relative overflow-hidden rounded-xl shadow-lg bg-gray-50 mx-auto max-w-[280px] sm:max-w-none">
                       <img
-                        src={productImages[currentImageIndex]}
-                        alt="Nutritious Snack Box - Gift A Snack"
+                        src={gallery.images[currentImageIndex]?.url || hero.mainImage}
+                        alt={gallery.images[currentImageIndex]?.alt || hero.title}
                         className="w-full h-40 sm:h-64 object-contain"
                         loading="lazy"
                         width={400}
@@ -834,7 +715,7 @@ export default function Index() {
                       />
                     </div>
 
-                    {productImages.length > 1 && (
+                    {gallery.images.length > 1 && (
                       <>
                         <button
                           onClick={prevImage}
@@ -859,48 +740,28 @@ export default function Index() {
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`h-4 w-4 sm:h-4 sm:w-4 ${i < 4 || (i === 4 && i < 4.6) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                          className={`h-4 w-4 sm:h-4 sm:w-4 ${i < Math.floor(hero.rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
                         />
                       ))}
                     </div>
                     <span className="ml-2 text-sm sm:text-sm text-gray-700 font-medium">
-                      4.6 ⭐ (23 reviews)
+                      {hero.rating} ⭐ ({hero.reviewCount} reviews)
                     </span>
                   </div>
 
                   {/* Pricing Section */}
                   <div className="mb-4 p-3 sm:p-4 bg-blue-50 rounded-xl border border-blue-200">
                     <PricingDisplay
-                      salePrice={salePrice}
+                      salePrice={hero.salePrice}
                       size="lg"
                       className="mb-2"
                     />
                     <div className="text-sm text-green-600 font-medium flex items-center gap-1">
-                      <svg
-                        className="w-3 h-3"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <Check className="w-3 h-3" />
                       Fresh & high-quality snacks
                     </div>
                     <div className="text-sm text-blue-600 font-medium flex items-center gap-1">
-                      <svg
-                        className="w-3 h-3"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <Check className="w-3 h-3" />
                       Walmart+ offer eligible
                     </div>
                   </div>
@@ -920,19 +781,13 @@ export default function Index() {
                     </p>
                   </div>
 
-                  {/* More Details Section - Always Visible */}
+                  {/* Benefits */}
                   <div className="mb-4 sm:mb-6">
                     <h3 className="text-lg font-bold text-gray-900 mb-3 text-center sm:text-left">
                       More Details
                     </h3>
                     <div className="space-y-2">
-                      {[
-                        "Ultimate snack experience in a beautifully designed high-end packaging box",
-                        "Packed with a variety of breakfast bars and savory snacks for daily energy",
-                        "Individually packaged snacks for convenient grab-and-go options",
-                        "Ideal for adults, teens, and college students alike",
-                        "Arrives with a heartwarming greeting card for a personal touch",
-                      ].map((detail, index) => (
+                      {finalCTA.benefits.map((detail, index) => (
                         <div
                           key={index}
                           className="flex items-start gap-2 sm:gap-3"
@@ -1000,27 +855,26 @@ export default function Index() {
           __html: JSON.stringify({
             "@context": "https://schema.org/",
             "@type": "Product",
-            name: "Nutritious Snack Box with Breakfast Bars and Delicious Chips | Gift A Snack (42 Count)",
+            name: hero.title,
             brand: {
               "@type": "Brand",
               name: "Gift-A-Snack",
             },
-            image: productImages,
-            description:
-              "Nutritious snack box with breakfast bars and delicious chips, perfect for all ages. Comes with attractive packaging and heartwarming greeting card.",
+            image: gallery.images.map(img => img.url),
+            description: finalCTA.sectionDescription,
             sku: "GAS-42-NUTRITIOUS",
             aggregateRating: {
               "@type": "AggregateRating",
-              ratingValue: "4.6",
-              reviewCount: "23",
+              ratingValue: hero.rating.toString(),
+              reviewCount: hero.reviewCount.toString(),
               bestRating: "5",
               worstRating: "1",
             },
             offers: {
               "@type": "Offer",
-              url: walmartUrl,
+              url: hero.walmartUrl,
               priceCurrency: "USD",
-              price: salePrice.toString(),
+              price: hero.salePrice.toString(),
               availability: "https://schema.org/InStock",
               seller: {
                 "@type": "Organization",
