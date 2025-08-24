@@ -34,7 +34,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { PricingDisplay } from "@/components/PricingDisplay";
 import { FloatingSnacks } from "@/components/FloatingSnacks";
 import { StickyCTA } from "@/components/StickyCTA";
-import { CustomerReviews } from "@/components/CustomerReviews";
+import { CustomerReviewsDynamic } from "@/components/CustomerReviewsDynamic";
 import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 import { useExitIntent } from "@/hooks/use-exit-intent";
 import { ContentStorage } from "@/lib/content-storage";
