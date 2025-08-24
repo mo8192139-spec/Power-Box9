@@ -15,7 +15,7 @@ import {
   RotateCcw,
   Eye,
   Search,
-  Zap
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,15 +31,60 @@ interface AdminSidebarProps {
 }
 
 const sidebarSections = [
-  { id: "seo", label: "SEO Settings", icon: Search, description: "Meta title, description, and keywords" },
-  { id: "hero", label: "Hero Section", icon: Home, description: "Main title, pricing, and hero image" },
-  { id: "benefits", label: "Benefits", icon: Star, description: "Product benefits and features" },
-  { id: "trust", label: "Trust Section", icon: Shield, description: "Walmart branding and trust indicators" },
-  { id: "gallery", label: "Gallery", icon: Image, description: "Product image gallery" },
-  { id: "reviews", label: "Reviews", icon: MessageCircle, description: "Customer reviews and testimonials" },
-  { id: "finalCTA", label: "Final CTA", icon: Megaphone, description: "Final call-to-action section" },
-  { id: "popups", label: "Popups", icon: Zap, description: "Button-triggered and exit intent popups" },
-  { id: "footer", label: "Footer", icon: Link, description: "Social media links and footer content" },
+  {
+    id: "seo",
+    label: "SEO Settings",
+    icon: Search,
+    description: "Meta title, description, and keywords",
+  },
+  {
+    id: "hero",
+    label: "Hero Section",
+    icon: Home,
+    description: "Main title, pricing, and hero image",
+  },
+  {
+    id: "benefits",
+    label: "Benefits",
+    icon: Star,
+    description: "Product benefits and features",
+  },
+  {
+    id: "trust",
+    label: "Trust Section",
+    icon: Shield,
+    description: "Walmart branding and trust indicators",
+  },
+  {
+    id: "gallery",
+    label: "Gallery",
+    icon: Image,
+    description: "Product image gallery",
+  },
+  {
+    id: "reviews",
+    label: "Reviews",
+    icon: MessageCircle,
+    description: "Customer reviews and testimonials",
+  },
+  {
+    id: "finalCTA",
+    label: "Final CTA",
+    icon: Megaphone,
+    description: "Final call-to-action section",
+  },
+  {
+    id: "popups",
+    label: "Popups",
+    icon: Zap,
+    description: "Button-triggered and exit intent popups",
+  },
+  {
+    id: "footer",
+    label: "Footer",
+    icon: Link,
+    description: "Social media links and footer content",
+  },
 ];
 
 export function AdminSidebar({
@@ -79,7 +124,7 @@ export function AdminSidebar({
           {sidebarSections.map((section) => {
             const Icon = section.icon;
             const isActive = activeSection === section.id;
-            
+
             return (
               <button
                 key={section.id}
@@ -88,7 +133,7 @@ export function AdminSidebar({
                   "w-full flex items-start gap-3 px-3 py-2 rounded-lg text-left transition-colors duration-200",
                   isActive
                     ? "bg-blue-100 text-blue-700 border-blue-200"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
                 )}
               >
                 <Icon className="h-5 w-5 mt-0.5 flex-shrink-0" />
@@ -111,7 +156,7 @@ export function AdminSidebar({
             Actions
           </h3>
         </div>
-        
+
         {onPreview && (
           <Button
             variant="outline"
@@ -190,18 +235,22 @@ export function AdminSidebar({
       )}
 
       {/* Desktop Sidebar */}
-      <div className={cn(
-        "hidden lg:flex lg:flex-col lg:w-80 lg:fixed lg:left-0 lg:top-0 lg:h-full bg-white border-r border-gray-200 shadow-sm",
-        className
-      )}>
+      <div
+        className={cn(
+          "hidden lg:flex lg:flex-col lg:w-80 lg:fixed lg:left-0 lg:top-0 lg:h-full bg-white border-r border-gray-200 shadow-sm",
+          className,
+        )}
+      >
         <SidebarContent />
       </div>
 
       {/* Mobile Sidebar */}
-      <div className={cn(
-        "lg:hidden fixed left-0 top-0 h-full w-80 bg-white border-r border-gray-200 shadow-lg z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
-        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
+      <div
+        className={cn(
+          "lg:hidden fixed left-0 top-0 h-full w-80 bg-white border-r border-gray-200 shadow-lg z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
         <SidebarContent />
       </div>
     </>

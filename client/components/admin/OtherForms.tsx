@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { Image, MessageCircle, Megaphone, Link, Plus, Trash2 } from "lucide-react";
+import {
+  Image,
+  MessageCircle,
+  Megaphone,
+  Link,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { AdminFormSection } from "./AdminFormSection";
 import { AdminInput } from "./AdminInput";
 import { AdminImageUpload } from "./AdminImageUpload";
@@ -7,34 +14,46 @@ import { AdminActionButtons } from "./AdminActionButtons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentStorage } from "@/lib/content-storage";
-import { GalleryContent, ReviewsContent, FinalCTAContent, FooterContent, CustomerReview, SocialLink } from "@shared/admin-content-types";
+import {
+  GalleryContent,
+  ReviewsContent,
+  FinalCTAContent,
+  FooterContent,
+  CustomerReview,
+  SocialLink,
+} from "@shared/admin-content-types";
 import { useToast } from "@/hooks/use-toast";
 
 // Gallery Form Component
 export function GalleryForm() {
-  const [galleryContent, setGalleryContent] = useState<GalleryContent>(() => 
-    ContentStorage.getSectionContent('gallery')
+  const [galleryContent, setGalleryContent] = useState<GalleryContent>(() =>
+    ContentStorage.getSectionContent("gallery"),
   );
-  const [originalContent, setOriginalContent] = useState<GalleryContent>(galleryContent);
+  const [originalContent, setOriginalContent] =
+    useState<GalleryContent>(galleryContent);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const content = ContentStorage.getSectionContent('gallery');
+    const content = ContentStorage.getSectionContent("gallery");
     setGalleryContent(content);
     setOriginalContent(content);
   }, []);
 
   const updateSectionTitle = (title: string) => {
-    setGalleryContent(prev => ({ ...prev, sectionTitle: title }));
+    setGalleryContent((prev) => ({ ...prev, sectionTitle: title }));
   };
 
-  const updateImage = (index: number, field: keyof GalleryContent['images'][0], value: string) => {
-    setGalleryContent(prev => ({
+  const updateImage = (
+    index: number,
+    field: keyof GalleryContent["images"][0],
+    value: string,
+  ) => {
+    setGalleryContent((prev) => ({
       ...prev,
-      images: prev.images.map((img, i) => 
-        i === index ? { ...img, [field]: value } : img
-      )
+      images: prev.images.map((img, i) =>
+        i === index ? { ...img, [field]: value } : img,
+      ),
     }));
   };
 
@@ -43,34 +62,45 @@ export function GalleryForm() {
       id: `img-${Date.now()}`,
       url: "",
       title: "New Image",
-      alt: "Product image"
+      alt: "Product image",
     };
-    
-    setGalleryContent(prev => ({
+
+    setGalleryContent((prev) => ({
       ...prev,
-      images: [...prev.images, newImage]
+      images: [...prev.images, newImage],
     }));
   };
 
   const removeImage = (index: number) => {
-    setGalleryContent(prev => ({
+    setGalleryContent((prev) => ({
       ...prev,
-      images: prev.images.filter((_, i) => i !== index)
+      images: prev.images.filter((_, i) => i !== index),
     }));
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const success = ContentStorage.updateSectionContent('gallery', galleryContent);
+      const success = ContentStorage.updateSectionContent(
+        "gallery",
+        galleryContent,
+      );
       if (success) {
         setOriginalContent(galleryContent);
-        toast({ title: "Gallery section saved", description: "Changes have been saved successfully." });
+        toast({
+          title: "Gallery section saved",
+          description: "Changes have been saved successfully.",
+        });
       } else {
         throw new Error("Failed to save");
       }
     } catch (error) {
-      toast({ title: "Error saving changes", description: "There was a problem saving your changes. Please try again.", variant: "destructive" });
+      toast({
+        title: "Error saving changes",
+        description:
+          "There was a problem saving your changes. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -78,10 +108,14 @@ export function GalleryForm() {
 
   const handleReset = () => {
     setGalleryContent(originalContent);
-    toast({ title: "Changes reset", description: "All changes have been reverted to the last saved state." });
+    toast({
+      title: "Changes reset",
+      description: "All changes have been reverted to the last saved state.",
+    });
   };
 
-  const hasChanges = JSON.stringify(galleryContent) !== JSON.stringify(originalContent);
+  const hasChanges =
+    JSON.stringify(galleryContent) !== JSON.stringify(originalContent);
 
   return (
     <div className="space-y-6">
@@ -100,7 +134,9 @@ export function GalleryForm() {
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-gray-900">Images ({galleryContent.images.length})</h3>
+            <h3 className="text-lg font-medium text-gray-900">
+              Images ({galleryContent.images.length})
+            </h3>
             <Button type="button" onClick={addImage} size="sm">
               <Plus className="h-4 w-4 mr-2" />
               Add Image
@@ -116,13 +152,17 @@ export function GalleryForm() {
                       <AdminInput
                         label="Title"
                         value={image.title}
-                        onChange={(value) => updateImage(index, 'title', value as string)}
+                        onChange={(value) =>
+                          updateImage(index, "title", value as string)
+                        }
                         required
                       />
                       <AdminInput
                         label="Alt Text"
                         value={image.alt}
-                        onChange={(value) => updateImage(index, 'alt', value as string)}
+                        onChange={(value) =>
+                          updateImage(index, "alt", value as string)
+                        }
                         required
                       />
                     </div>
@@ -130,7 +170,7 @@ export function GalleryForm() {
                       <AdminImageUpload
                         label="Image"
                         value={image.url}
-                        onChange={(value) => updateImage(index, 'url', value)}
+                        onChange={(value) => updateImage(index, "url", value)}
                         aspectRatio="landscape"
                       />
                       <Button
@@ -164,29 +204,37 @@ export function GalleryForm() {
 
 // Reviews Form Component
 export function ReviewsForm() {
-  const [reviewsContent, setReviewsContent] = useState<ReviewsContent>(() => 
-    ContentStorage.getSectionContent('reviews')
+  const [reviewsContent, setReviewsContent] = useState<ReviewsContent>(() =>
+    ContentStorage.getSectionContent("reviews"),
   );
-  const [originalContent, setOriginalContent] = useState<ReviewsContent>(reviewsContent);
+  const [originalContent, setOriginalContent] =
+    useState<ReviewsContent>(reviewsContent);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const content = ContentStorage.getSectionContent('reviews');
+    const content = ContentStorage.getSectionContent("reviews");
     setReviewsContent(content);
     setOriginalContent(content);
   }, []);
 
-  const updateField = <K extends keyof ReviewsContent>(field: K, value: ReviewsContent[K]) => {
-    setReviewsContent(prev => ({ ...prev, [field]: value }));
+  const updateField = <K extends keyof ReviewsContent>(
+    field: K,
+    value: ReviewsContent[K],
+  ) => {
+    setReviewsContent((prev) => ({ ...prev, [field]: value }));
   };
 
-  const updateReview = (index: number, field: keyof CustomerReview, value: any) => {
-    setReviewsContent(prev => ({
+  const updateReview = (
+    index: number,
+    field: keyof CustomerReview,
+    value: any,
+  ) => {
+    setReviewsContent((prev) => ({
       ...prev,
-      reviews: prev.reviews.map((review, i) => 
-        i === index ? { ...review, [field]: value } : review
-      )
+      reviews: prev.reviews.map((review, i) =>
+        i === index ? { ...review, [field]: value } : review,
+      ),
     }));
   };
 
@@ -196,34 +244,45 @@ export function ReviewsForm() {
       name: "New Customer",
       photo: "",
       rating: 5,
-      review: "Great product!"
+      review: "Great product!",
     };
-    
-    setReviewsContent(prev => ({
+
+    setReviewsContent((prev) => ({
       ...prev,
-      reviews: [...prev.reviews, newReview]
+      reviews: [...prev.reviews, newReview],
     }));
   };
 
   const removeReview = (index: number) => {
-    setReviewsContent(prev => ({
+    setReviewsContent((prev) => ({
       ...prev,
-      reviews: prev.reviews.filter((_, i) => i !== index)
+      reviews: prev.reviews.filter((_, i) => i !== index),
     }));
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const success = ContentStorage.updateSectionContent('reviews', reviewsContent);
+      const success = ContentStorage.updateSectionContent(
+        "reviews",
+        reviewsContent,
+      );
       if (success) {
         setOriginalContent(reviewsContent);
-        toast({ title: "Reviews section saved", description: "Changes have been saved successfully." });
+        toast({
+          title: "Reviews section saved",
+          description: "Changes have been saved successfully.",
+        });
       } else {
         throw new Error("Failed to save");
       }
     } catch (error) {
-      toast({ title: "Error saving changes", description: "There was a problem saving your changes. Please try again.", variant: "destructive" });
+      toast({
+        title: "Error saving changes",
+        description:
+          "There was a problem saving your changes. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -231,10 +290,14 @@ export function ReviewsForm() {
 
   const handleReset = () => {
     setReviewsContent(originalContent);
-    toast({ title: "Changes reset", description: "All changes have been reverted to the last saved state." });
+    toast({
+      title: "Changes reset",
+      description: "All changes have been reverted to the last saved state.",
+    });
   };
 
-  const hasChanges = JSON.stringify(reviewsContent) !== JSON.stringify(originalContent);
+  const hasChanges =
+    JSON.stringify(reviewsContent) !== JSON.stringify(originalContent);
 
   return (
     <div className="space-y-6">
@@ -246,20 +309,24 @@ export function ReviewsForm() {
         <AdminInput
           label="Section Title"
           value={reviewsContent.sectionTitle}
-          onChange={(value) => updateField('sectionTitle', value as string)}
+          onChange={(value) => updateField("sectionTitle", value as string)}
           required
         />
 
         <AdminInput
           label="Section Description"
           value={reviewsContent.sectionDescription}
-          onChange={(value) => updateField('sectionDescription', value as string)}
+          onChange={(value) =>
+            updateField("sectionDescription", value as string)
+          }
           required
         />
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-gray-900">Customer Reviews ({reviewsContent.reviews.length})</h3>
+            <h3 className="text-lg font-medium text-gray-900">
+              Customer Reviews ({reviewsContent.reviews.length})
+            </h3>
             <Button type="button" onClick={addReview} size="sm">
               <Plus className="h-4 w-4 mr-2" />
               Add Review
@@ -275,14 +342,16 @@ export function ReviewsForm() {
                       <AdminInput
                         label="Customer Name"
                         value={review.name}
-                        onChange={(value) => updateReview(index, 'name', value)}
+                        onChange={(value) => updateReview(index, "name", value)}
                         required
                       />
                       <AdminInput
                         label="Rating"
                         type="number"
                         value={review.rating}
-                        onChange={(value) => updateReview(index, 'rating', value)}
+                        onChange={(value) =>
+                          updateReview(index, "rating", value)
+                        }
                         min={1}
                         max={5}
                         required
@@ -291,7 +360,9 @@ export function ReviewsForm() {
                         label="Review Text"
                         type="textarea"
                         value={review.review}
-                        onChange={(value) => updateReview(index, 'review', value)}
+                        onChange={(value) =>
+                          updateReview(index, "review", value)
+                        }
                         required
                         rows={3}
                       />
@@ -300,7 +371,9 @@ export function ReviewsForm() {
                       <AdminImageUpload
                         label="Customer Photo"
                         value={review.photo}
-                        onChange={(value) => updateReview(index, 'photo', value)}
+                        onChange={(value) =>
+                          updateReview(index, "photo", value)
+                        }
                         aspectRatio="square"
                       />
                       <Button
@@ -334,58 +407,73 @@ export function ReviewsForm() {
 
 // Final CTA Form Component
 export function FinalCTAForm() {
-  const [ctaContent, setCtaContent] = useState<FinalCTAContent>(() => 
-    ContentStorage.getSectionContent('finalCTA')
+  const [ctaContent, setCtaContent] = useState<FinalCTAContent>(() =>
+    ContentStorage.getSectionContent("finalCTA"),
   );
-  const [originalContent, setOriginalContent] = useState<FinalCTAContent>(ctaContent);
+  const [originalContent, setOriginalContent] =
+    useState<FinalCTAContent>(ctaContent);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const content = ContentStorage.getSectionContent('finalCTA');
+    const content = ContentStorage.getSectionContent("finalCTA");
     setCtaContent(content);
     setOriginalContent(content);
   }, []);
 
-  const updateField = <K extends keyof FinalCTAContent>(field: K, value: FinalCTAContent[K]) => {
-    setCtaContent(prev => ({ ...prev, [field]: value }));
+  const updateField = <K extends keyof FinalCTAContent>(
+    field: K,
+    value: FinalCTAContent[K],
+  ) => {
+    setCtaContent((prev) => ({ ...prev, [field]: value }));
   };
 
   const updateBenefit = (index: number, value: string) => {
-    setCtaContent(prev => ({
+    setCtaContent((prev) => ({
       ...prev,
-      benefits: prev.benefits.map((benefit, i) => 
-        i === index ? value : benefit
-      )
+      benefits: prev.benefits.map((benefit, i) =>
+        i === index ? value : benefit,
+      ),
     }));
   };
 
   const addBenefit = () => {
-    setCtaContent(prev => ({
+    setCtaContent((prev) => ({
       ...prev,
-      benefits: [...prev.benefits, "New benefit"]
+      benefits: [...prev.benefits, "New benefit"],
     }));
   };
 
   const removeBenefit = (index: number) => {
-    setCtaContent(prev => ({
+    setCtaContent((prev) => ({
       ...prev,
-      benefits: prev.benefits.filter((_, i) => i !== index)
+      benefits: prev.benefits.filter((_, i) => i !== index),
     }));
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const success = ContentStorage.updateSectionContent('finalCTA', ctaContent);
+      const success = ContentStorage.updateSectionContent(
+        "finalCTA",
+        ctaContent,
+      );
       if (success) {
         setOriginalContent(ctaContent);
-        toast({ title: "Final CTA section saved", description: "Changes have been saved successfully." });
+        toast({
+          title: "Final CTA section saved",
+          description: "Changes have been saved successfully.",
+        });
       } else {
         throw new Error("Failed to save");
       }
     } catch (error) {
-      toast({ title: "Error saving changes", description: "There was a problem saving your changes. Please try again.", variant: "destructive" });
+      toast({
+        title: "Error saving changes",
+        description:
+          "There was a problem saving your changes. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -393,10 +481,14 @@ export function FinalCTAForm() {
 
   const handleReset = () => {
     setCtaContent(originalContent);
-    toast({ title: "Changes reset", description: "All changes have been reverted to the last saved state." });
+    toast({
+      title: "Changes reset",
+      description: "All changes have been reverted to the last saved state.",
+    });
   };
 
-  const hasChanges = JSON.stringify(ctaContent) !== JSON.stringify(originalContent);
+  const hasChanges =
+    JSON.stringify(ctaContent) !== JSON.stringify(originalContent);
 
   return (
     <div className="space-y-6">
@@ -410,14 +502,16 @@ export function FinalCTAForm() {
             <AdminInput
               label="Section Title"
               value={ctaContent.sectionTitle}
-              onChange={(value) => updateField('sectionTitle', value as string)}
+              onChange={(value) => updateField("sectionTitle", value as string)}
               required
             />
 
             <AdminInput
               label="Section Description"
               value={ctaContent.sectionDescription}
-              onChange={(value) => updateField('sectionDescription', value as string)}
+              onChange={(value) =>
+                updateField("sectionDescription", value as string)
+              }
               required
             />
 
@@ -457,7 +551,7 @@ export function FinalCTAForm() {
             <AdminImageUpload
               label="Product Image"
               value={ctaContent.productImage}
-              onChange={(value) => updateField('productImage', value)}
+              onChange={(value) => updateField("productImage", value)}
               aspectRatio="landscape"
               required
             />
@@ -477,25 +571,30 @@ export function FinalCTAForm() {
 
 // Footer Form Component
 export function FooterForm() {
-  const [footerContent, setFooterContent] = useState<FooterContent>(() => 
-    ContentStorage.getSectionContent('footer')
+  const [footerContent, setFooterContent] = useState<FooterContent>(() =>
+    ContentStorage.getSectionContent("footer"),
   );
-  const [originalContent, setOriginalContent] = useState<FooterContent>(footerContent);
+  const [originalContent, setOriginalContent] =
+    useState<FooterContent>(footerContent);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const content = ContentStorage.getSectionContent('footer');
+    const content = ContentStorage.getSectionContent("footer");
     setFooterContent(content);
     setOriginalContent(content);
   }, []);
 
-  const updateSocialLink = (index: number, field: keyof SocialLink, value: string) => {
-    setFooterContent(prev => ({
+  const updateSocialLink = (
+    index: number,
+    field: keyof SocialLink,
+    value: string,
+  ) => {
+    setFooterContent((prev) => ({
       ...prev,
-      socialLinks: prev.socialLinks.map((link, i) => 
-        i === index ? { ...link, [field]: value } : link
-      )
+      socialLinks: prev.socialLinks.map((link, i) =>
+        i === index ? { ...link, [field]: value } : link,
+      ),
     }));
   };
 
@@ -504,34 +603,45 @@ export function FooterForm() {
       id: `social-${Date.now()}`,
       platform: "New Platform",
       url: "https://",
-      iconName: "ExternalLink"
+      iconName: "ExternalLink",
     };
-    
-    setFooterContent(prev => ({
+
+    setFooterContent((prev) => ({
       ...prev,
-      socialLinks: [...prev.socialLinks, newLink]
+      socialLinks: [...prev.socialLinks, newLink],
     }));
   };
 
   const removeSocialLink = (index: number) => {
-    setFooterContent(prev => ({
+    setFooterContent((prev) => ({
       ...prev,
-      socialLinks: prev.socialLinks.filter((_, i) => i !== index)
+      socialLinks: prev.socialLinks.filter((_, i) => i !== index),
     }));
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const success = ContentStorage.updateSectionContent('footer', footerContent);
+      const success = ContentStorage.updateSectionContent(
+        "footer",
+        footerContent,
+      );
       if (success) {
         setOriginalContent(footerContent);
-        toast({ title: "Footer section saved", description: "Changes have been saved successfully." });
+        toast({
+          title: "Footer section saved",
+          description: "Changes have been saved successfully.",
+        });
       } else {
         throw new Error("Failed to save");
       }
     } catch (error) {
-      toast({ title: "Error saving changes", description: "There was a problem saving your changes. Please try again.", variant: "destructive" });
+      toast({
+        title: "Error saving changes",
+        description:
+          "There was a problem saving your changes. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -539,10 +649,14 @@ export function FooterForm() {
 
   const handleReset = () => {
     setFooterContent(originalContent);
-    toast({ title: "Changes reset", description: "All changes have been reverted to the last saved state." });
+    toast({
+      title: "Changes reset",
+      description: "All changes have been reverted to the last saved state.",
+    });
   };
 
-  const hasChanges = JSON.stringify(footerContent) !== JSON.stringify(originalContent);
+  const hasChanges =
+    JSON.stringify(footerContent) !== JSON.stringify(originalContent);
 
   return (
     <div className="space-y-6">
@@ -553,7 +667,9 @@ export function FooterForm() {
       >
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-gray-900">Social Media Links</h3>
+            <h3 className="text-lg font-medium text-gray-900">
+              Social Media Links
+            </h3>
             <Button type="button" onClick={addSocialLink} size="sm">
               <Plus className="h-4 w-4 mr-2" />
               Add Social Link
@@ -568,21 +684,27 @@ export function FooterForm() {
                     <AdminInput
                       label="Platform"
                       value={link.platform}
-                      onChange={(value) => updateSocialLink(index, 'platform', value as string)}
+                      onChange={(value) =>
+                        updateSocialLink(index, "platform", value as string)
+                      }
                       required
                     />
                     <AdminInput
                       label="URL"
                       type="url"
                       value={link.url}
-                      onChange={(value) => updateSocialLink(index, 'url', value as string)}
+                      onChange={(value) =>
+                        updateSocialLink(index, "url", value as string)
+                      }
                       required
                     />
                     <div className="flex items-end gap-2">
                       <AdminInput
                         label="Icon Name"
                         value={link.iconName}
-                        onChange={(value) => updateSocialLink(index, 'iconName', value as string)}
+                        onChange={(value) =>
+                          updateSocialLink(index, "iconName", value as string)
+                        }
                         required
                         className="flex-1"
                       />

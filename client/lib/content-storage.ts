@@ -1,6 +1,6 @@
-import { SiteContent, defaultSiteContent } from '@shared/admin-content-types';
+import { SiteContent, defaultSiteContent } from "@shared/admin-content-types";
 
-const STORAGE_KEY = 'fusion-site-content';
+const STORAGE_KEY = "fusion-site-content";
 
 export class ContentStorage {
   /**
@@ -15,7 +15,7 @@ export class ContentStorage {
         return this.mergeWithDefaults(parsed);
       }
     } catch (error) {
-      console.error('Error loading content from localStorage:', error);
+      console.error("Error loading content from localStorage:", error);
     }
     return defaultSiteContent;
   }
@@ -28,7 +28,7 @@ export class ContentStorage {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
       return true;
     } catch (error) {
-      console.error('Error saving content to localStorage:', error);
+      console.error("Error saving content to localStorage:", error);
       return false;
     }
   }
@@ -36,7 +36,9 @@ export class ContentStorage {
   /**
    * Get specific section content
    */
-  static getSectionContent<K extends keyof SiteContent>(section: K): SiteContent[K] {
+  static getSectionContent<K extends keyof SiteContent>(
+    section: K,
+  ): SiteContent[K] {
     const content = this.getSiteContent();
     return content[section];
   }
@@ -46,14 +48,14 @@ export class ContentStorage {
    */
   static updateSectionContent<K extends keyof SiteContent>(
     section: K,
-    sectionContent: SiteContent[K]
+    sectionContent: SiteContent[K],
   ): boolean {
     try {
       const content = this.getSiteContent();
       content[section] = sectionContent;
       return this.saveSiteContent(content);
     } catch (error) {
-      console.error('Error updating section content:', error);
+      console.error("Error updating section content:", error);
       return false;
     }
   }
@@ -66,7 +68,7 @@ export class ContentStorage {
       localStorage.removeItem(STORAGE_KEY);
       return true;
     } catch (error) {
-      console.error('Error resetting content:', error);
+      console.error("Error resetting content:", error);
       return false;
     }
   }
@@ -88,7 +90,7 @@ export class ContentStorage {
       const mergedContent = this.mergeWithDefaults(content);
       return this.saveSiteContent(mergedContent);
     } catch (error) {
-      console.error('Error importing content:', error);
+      console.error("Error importing content:", error);
       return false;
     }
   }
@@ -108,7 +110,8 @@ export class ContentStorage {
       merged.benefits = {
         ...defaultSiteContent.benefits,
         ...stored.benefits,
-        benefits: stored.benefits.benefits || defaultSiteContent.benefits.benefits
+        benefits:
+          stored.benefits.benefits || defaultSiteContent.benefits.benefits,
       };
     }
 
@@ -120,7 +123,7 @@ export class ContentStorage {
       merged.gallery = {
         ...defaultSiteContent.gallery,
         ...stored.gallery,
-        images: stored.gallery.images || defaultSiteContent.gallery.images
+        images: stored.gallery.images || defaultSiteContent.gallery.images,
       };
     }
 
@@ -128,7 +131,7 @@ export class ContentStorage {
       merged.reviews = {
         ...defaultSiteContent.reviews,
         ...stored.reviews,
-        reviews: stored.reviews.reviews || defaultSiteContent.reviews.reviews
+        reviews: stored.reviews.reviews || defaultSiteContent.reviews.reviews,
       };
     }
 
@@ -136,7 +139,8 @@ export class ContentStorage {
       merged.finalCTA = {
         ...defaultSiteContent.finalCTA,
         ...stored.finalCTA,
-        benefits: stored.finalCTA.benefits || defaultSiteContent.finalCTA.benefits
+        benefits:
+          stored.finalCTA.benefits || defaultSiteContent.finalCTA.benefits,
       };
     }
 
@@ -144,7 +148,8 @@ export class ContentStorage {
       merged.footer = {
         ...defaultSiteContent.footer,
         ...stored.footer,
-        socialLinks: stored.footer.socialLinks || defaultSiteContent.footer.socialLinks
+        socialLinks:
+          stored.footer.socialLinks || defaultSiteContent.footer.socialLinks,
       };
     }
 
@@ -185,10 +190,10 @@ export class ContentStorage {
 
 // Override saveSiteContent to include timestamp
 const originalSave = ContentStorage.saveSiteContent;
-ContentStorage.saveSiteContent = function(content: SiteContent): boolean {
+ContentStorage.saveSiteContent = function (content: SiteContent): boolean {
   const result = originalSave.call(this, content);
   if (result) {
-    ContentStorage['updateTimestamp']();
+    ContentStorage["updateTimestamp"]();
   }
   return result;
 };

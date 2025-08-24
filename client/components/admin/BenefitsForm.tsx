@@ -5,7 +5,13 @@ import { AdminInput } from "./AdminInput";
 import { AdminImageUpload } from "./AdminImageUpload";
 import { AdminActionButtons } from "./AdminActionButtons";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentStorage } from "@/lib/content-storage";
@@ -14,38 +20,58 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 const iconOptions = [
-  "Package", "Gift", "Zap", "Users", "Heart", "BadgeCheck", 
-  "Shield", "Star", "Check", "Truck", "Clock", "Award"
+  "Package",
+  "Gift",
+  "Zap",
+  "Users",
+  "Heart",
+  "BadgeCheck",
+  "Shield",
+  "Star",
+  "Check",
+  "Truck",
+  "Clock",
+  "Award",
 ];
 
-const colorOptions: Array<BenefitCard['color']> = [
-  "blue", "purple", "green", "orange", "red", "indigo"
+const colorOptions: Array<BenefitCard["color"]> = [
+  "blue",
+  "purple",
+  "green",
+  "orange",
+  "red",
+  "indigo",
 ];
 
 export function BenefitsForm() {
-  const [benefitsContent, setBenefitsContent] = useState<BenefitsContent>(() => 
-    ContentStorage.getSectionContent('benefits')
+  const [benefitsContent, setBenefitsContent] = useState<BenefitsContent>(() =>
+    ContentStorage.getSectionContent("benefits"),
   );
-  const [originalContent, setOriginalContent] = useState<BenefitsContent>(benefitsContent);
+  const [originalContent, setOriginalContent] =
+    useState<BenefitsContent>(benefitsContent);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const content = ContentStorage.getSectionContent('benefits');
+    const content = ContentStorage.getSectionContent("benefits");
     setBenefitsContent(content);
     setOriginalContent(content);
   }, []);
 
   const updateSectionTitle = (title: string) => {
-    setBenefitsContent(prev => ({ ...prev, sectionTitle: title }));
+    setBenefitsContent((prev) => ({ ...prev, sectionTitle: title }));
   };
 
-  const updateBenefit = (index: number, field: keyof BenefitCard, value: any) => {
-    setBenefitsContent(prev => ({
+  const updateBenefit = (
+    index: number,
+    field: keyof BenefitCard,
+    value: any,
+  ) => {
+    setBenefitsContent((prev) => ({
       ...prev,
-      benefits: prev.benefits.map((benefit, i) => 
-        i === index ? { ...benefit, [field]: value } : benefit
-      )
+      benefits: prev.benefits.map((benefit, i) =>
+        i === index ? { ...benefit, [field]: value } : benefit,
+      ),
     }));
   };
 
@@ -56,24 +82,24 @@ export function BenefitsForm() {
       description: "Describe this benefit",
       image: "",
       iconName: "Star",
-      color: "blue"
+      color: "blue",
     };
-    
-    setBenefitsContent(prev => ({
+
+    setBenefitsContent((prev) => ({
       ...prev,
-      benefits: [...prev.benefits, newBenefit]
+      benefits: [...prev.benefits, newBenefit],
     }));
   };
 
   const removeBenefit = (index: number) => {
-    setBenefitsContent(prev => ({
+    setBenefitsContent((prev) => ({
       ...prev,
-      benefits: prev.benefits.filter((_, i) => i !== index)
+      benefits: prev.benefits.filter((_, i) => i !== index),
     }));
   };
 
   const moveBenefit = (fromIndex: number, toIndex: number) => {
-    setBenefitsContent(prev => {
+    setBenefitsContent((prev) => {
       const newBenefits = [...prev.benefits];
       const [removed] = newBenefits.splice(fromIndex, 1);
       newBenefits.splice(toIndex, 0, removed);
@@ -84,7 +110,10 @@ export function BenefitsForm() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const success = ContentStorage.updateSectionContent('benefits', benefitsContent);
+      const success = ContentStorage.updateSectionContent(
+        "benefits",
+        benefitsContent,
+      );
       if (success) {
         setOriginalContent(benefitsContent);
         toast({
@@ -97,7 +126,8 @@ export function BenefitsForm() {
     } catch (error) {
       toast({
         title: "Error saving changes",
-        description: "There was a problem saving your changes. Please try again.",
+        description:
+          "There was a problem saving your changes. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -113,7 +143,8 @@ export function BenefitsForm() {
     });
   };
 
-  const hasChanges = JSON.stringify(benefitsContent) !== JSON.stringify(originalContent);
+  const hasChanges =
+    JSON.stringify(benefitsContent) !== JSON.stringify(originalContent);
 
   return (
     <div className="space-y-6">
@@ -135,7 +166,9 @@ export function BenefitsForm() {
         {/* Benefits Grid */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-gray-900">Benefits ({benefitsContent.benefits.length})</h3>
+            <h3 className="text-lg font-medium text-gray-900">
+              Benefits ({benefitsContent.benefits.length})
+            </h3>
             <Button
               type="button"
               onClick={addBenefit}
@@ -167,7 +200,9 @@ export function BenefitsForm() {
                         <AdminInput
                           label="Title"
                           value={benefit.title}
-                          onChange={(value) => updateBenefit(index, 'title', value)}
+                          onChange={(value) =>
+                            updateBenefit(index, "title", value)
+                          }
                           placeholder="Benefit title"
                           required
                         />
@@ -176,7 +211,9 @@ export function BenefitsForm() {
                           label="Description"
                           type="textarea"
                           value={benefit.description}
-                          onChange={(value) => updateBenefit(index, 'description', value)}
+                          onChange={(value) =>
+                            updateBenefit(index, "description", value)
+                          }
                           placeholder="Benefit description"
                           required
                           rows={2}
@@ -184,10 +221,14 @@ export function BenefitsForm() {
 
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label className="text-sm font-medium text-gray-700">Icon</Label>
+                            <Label className="text-sm font-medium text-gray-700">
+                              Icon
+                            </Label>
                             <Select
                               value={benefit.iconName}
-                              onValueChange={(value) => updateBenefit(index, 'iconName', value)}
+                              onValueChange={(value) =>
+                                updateBenefit(index, "iconName", value)
+                              }
                             >
                               <SelectTrigger>
                                 <SelectValue />
@@ -203,10 +244,18 @@ export function BenefitsForm() {
                           </div>
 
                           <div className="space-y-2">
-                            <Label className="text-sm font-medium text-gray-700">Color</Label>
+                            <Label className="text-sm font-medium text-gray-700">
+                              Color
+                            </Label>
                             <Select
                               value={benefit.color}
-                              onValueChange={(value) => updateBenefit(index, 'color', value as BenefitCard['color'])}
+                              onValueChange={(value) =>
+                                updateBenefit(
+                                  index,
+                                  "color",
+                                  value as BenefitCard["color"],
+                                )
+                              }
                             >
                               <SelectTrigger>
                                 <SelectValue />
@@ -215,15 +264,17 @@ export function BenefitsForm() {
                                 {colorOptions.map((color) => (
                                   <SelectItem key={color} value={color}>
                                     <div className="flex items-center gap-2">
-                                      <div className={cn(
-                                        "w-3 h-3 rounded-full",
-                                        color === "blue" && "bg-blue-500",
-                                        color === "purple" && "bg-purple-500",
-                                        color === "green" && "bg-green-500",
-                                        color === "orange" && "bg-orange-500",
-                                        color === "red" && "bg-red-500",
-                                        color === "indigo" && "bg-indigo-500"
-                                      )} />
+                                      <div
+                                        className={cn(
+                                          "w-3 h-3 rounded-full",
+                                          color === "blue" && "bg-blue-500",
+                                          color === "purple" && "bg-purple-500",
+                                          color === "green" && "bg-green-500",
+                                          color === "orange" && "bg-orange-500",
+                                          color === "red" && "bg-red-500",
+                                          color === "indigo" && "bg-indigo-500",
+                                        )}
+                                      />
                                       {color}
                                     </div>
                                   </SelectItem>
@@ -239,7 +290,9 @@ export function BenefitsForm() {
                         <AdminImageUpload
                           label="Benefit Image"
                           value={benefit.image}
-                          onChange={(value) => updateBenefit(index, 'image', value)}
+                          onChange={(value) =>
+                            updateBenefit(index, "image", value)
+                          }
                           aspectRatio="landscape"
                           description="Image representing this benefit"
                         />

@@ -70,14 +70,14 @@ export function AdminActionButtons({
                 Reset Changes
               </AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to reset all changes? This will revert all 
-                fields in this section to their previously saved values. This action 
-                cannot be undone.
+                Are you sure you want to reset all changes? This will revert all
+                fields in this section to their previously saved values. This
+                action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction 
+              <AlertDialogAction
                 onClick={confirmReset}
                 className="bg-orange-600 hover:bg-orange-700"
               >

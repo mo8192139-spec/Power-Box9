@@ -19,24 +19,33 @@ interface AdminInputProps {
   description?: string;
 }
 
-export const AdminInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, AdminInputProps>(
-  ({
-    label,
-    type = "text",
-    value,
-    onChange,
-    placeholder,
-    required = false,
-    className,
-    rows = 3,
-    min,
-    max,
-    step,
-    description,
-    ...props
-  }, ref) => {
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const newValue = type === "number" ? parseFloat(e.target.value) || 0 : e.target.value;
+export const AdminInput = forwardRef<
+  HTMLInputElement | HTMLTextAreaElement,
+  AdminInputProps
+>(
+  (
+    {
+      label,
+      type = "text",
+      value,
+      onChange,
+      placeholder,
+      required = false,
+      className,
+      rows = 3,
+      min,
+      max,
+      step,
+      description,
+      ...props
+    },
+    ref,
+  ) => {
+    const handleChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
+      const newValue =
+        type === "number" ? parseFloat(e.target.value) || 0 : e.target.value;
       onChange(newValue);
     };
 
@@ -57,7 +66,7 @@ export const AdminInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, Adm
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </Label>
-        
+
         {type === "textarea" ? (
           <Textarea
             ref={ref as React.ForwardedRef<HTMLTextAreaElement>}
@@ -74,13 +83,11 @@ export const AdminInput = forwardRef<HTMLInputElement | HTMLTextAreaElement, Adm
             {...numberProps}
           />
         )}
-        
-        {description && (
-          <p className="text-xs text-gray-500">{description}</p>
-        )}
+
+        {description && <p className="text-xs text-gray-500">{description}</p>}
       </div>
     );
-  }
+  },
 );
 
 AdminInput.displayName = "AdminInput";

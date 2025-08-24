@@ -11,33 +11,41 @@ import { PopupsContent, PopupContent } from "@shared/admin-content-types";
 import { useToast } from "@/hooks/use-toast";
 
 export function PopupsForm() {
-  const [popupsContent, setPopupsContent] = useState<PopupsContent>(() => 
-    ContentStorage.getSectionContent('popups')
+  const [popupsContent, setPopupsContent] = useState<PopupsContent>(() =>
+    ContentStorage.getSectionContent("popups"),
   );
-  const [originalContent, setOriginalContent] = useState<PopupsContent>(popupsContent);
+  const [originalContent, setOriginalContent] =
+    useState<PopupsContent>(popupsContent);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const content = ContentStorage.getSectionContent('popups');
+    const content = ContentStorage.getSectionContent("popups");
     setPopupsContent(content);
     setOriginalContent(content);
   }, []);
 
-  const updatePopup = (popupType: 'buttonTriggeredPopup' | 'exitIntentPopup', field: keyof PopupContent, value: any) => {
-    setPopupsContent(prev => ({
+  const updatePopup = (
+    popupType: "buttonTriggeredPopup" | "exitIntentPopup",
+    field: keyof PopupContent,
+    value: any,
+  ) => {
+    setPopupsContent((prev) => ({
       ...prev,
       [popupType]: {
         ...prev[popupType],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const success = ContentStorage.updateSectionContent('popups', popupsContent);
+      const success = ContentStorage.updateSectionContent(
+        "popups",
+        popupsContent,
+      );
       if (success) {
         setOriginalContent(popupsContent);
         toast({
@@ -50,7 +58,8 @@ export function PopupsForm() {
     } catch (error) {
       toast({
         title: "Error saving changes",
-        description: "There was a problem saving your changes. Please try again.",
+        description:
+          "There was a problem saving your changes. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -66,7 +75,8 @@ export function PopupsForm() {
     });
   };
 
-  const hasChanges = JSON.stringify(popupsContent) !== JSON.stringify(originalContent);
+  const hasChanges =
+    JSON.stringify(popupsContent) !== JSON.stringify(originalContent);
 
   return (
     <div className="space-y-6">
@@ -89,20 +99,27 @@ export function PopupsForm() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label htmlFor="button-popup-enabled" className="text-sm font-medium">
+                <Label
+                  htmlFor="button-popup-enabled"
+                  className="text-sm font-medium"
+                >
                   Enable Button Popup
                 </Label>
                 <Switch
                   id="button-popup-enabled"
                   checked={popupsContent.buttonTriggeredPopup.enabled}
-                  onCheckedChange={(checked) => updatePopup('buttonTriggeredPopup', 'enabled', checked)}
+                  onCheckedChange={(checked) =>
+                    updatePopup("buttonTriggeredPopup", "enabled", checked)
+                  }
                 />
               </div>
 
               <AdminInput
                 label="Popup Title"
                 value={popupsContent.buttonTriggeredPopup.title}
-                onChange={(value) => updatePopup('buttonTriggeredPopup', 'title', value)}
+                onChange={(value) =>
+                  updatePopup("buttonTriggeredPopup", "title", value)
+                }
                 placeholder="Enter popup title"
                 required
               />
@@ -111,7 +128,9 @@ export function PopupsForm() {
                 label="Content Text"
                 type="textarea"
                 value={popupsContent.buttonTriggeredPopup.content}
-                onChange={(value) => updatePopup('buttonTriggeredPopup', 'content', value)}
+                onChange={(value) =>
+                  updatePopup("buttonTriggeredPopup", "content", value)
+                }
                 placeholder="Enter popup content"
                 required
                 rows={3}
@@ -121,7 +140,9 @@ export function PopupsForm() {
                 <AdminInput
                   label="Button Text"
                   value={popupsContent.buttonTriggeredPopup.buttonText}
-                  onChange={(value) => updatePopup('buttonTriggeredPopup', 'buttonText', value)}
+                  onChange={(value) =>
+                    updatePopup("buttonTriggeredPopup", "buttonText", value)
+                  }
                   placeholder="e.g., Claim Offer"
                   required
                 />
@@ -130,7 +151,9 @@ export function PopupsForm() {
                   label="Button Link"
                   type="url"
                   value={popupsContent.buttonTriggeredPopup.buttonLink}
-                  onChange={(value) => updatePopup('buttonTriggeredPopup', 'buttonLink', value)}
+                  onChange={(value) =>
+                    updatePopup("buttonTriggeredPopup", "buttonLink", value)
+                  }
                   placeholder="https://..."
                   required
                 />
@@ -139,24 +162,30 @@ export function PopupsForm() {
               <AdminInput
                 label="Email Link (Optional)"
                 type="email"
-                value={popupsContent.buttonTriggeredPopup.emailLink || ''}
-                onChange={(value) => updatePopup('buttonTriggeredPopup', 'emailLink', value)}
+                value={popupsContent.buttonTriggeredPopup.emailLink || ""}
+                onChange={(value) =>
+                  updatePopup("buttonTriggeredPopup", "emailLink", value)
+                }
                 placeholder="mailto:offers@example.com?subject=Special Offer"
                 description="Optional email link for lead collection"
               />
 
               {/* Preview */}
               <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
-                <h4 className="text-sm font-semibold text-gray-700 mb-2">Preview</h4>
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                  Preview
+                </h4>
                 <div className="bg-white rounded-lg shadow-lg p-6 max-w-md">
                   <h3 className="text-lg font-bold mb-2">
                     {popupsContent.buttonTriggeredPopup.title || "Popup Title"}
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    {popupsContent.buttonTriggeredPopup.content || "Popup content will appear here"}
+                    {popupsContent.buttonTriggeredPopup.content ||
+                      "Popup content will appear here"}
                   </p>
                   <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium">
-                    {popupsContent.buttonTriggeredPopup.buttonText || "Button Text"}
+                    {popupsContent.buttonTriggeredPopup.buttonText ||
+                      "Button Text"}
                   </button>
                 </div>
               </div>
@@ -176,20 +205,27 @@ export function PopupsForm() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label htmlFor="exit-popup-enabled" className="text-sm font-medium">
+                <Label
+                  htmlFor="exit-popup-enabled"
+                  className="text-sm font-medium"
+                >
                   Enable Exit Intent Popup
                 </Label>
                 <Switch
                   id="exit-popup-enabled"
                   checked={popupsContent.exitIntentPopup.enabled}
-                  onCheckedChange={(checked) => updatePopup('exitIntentPopup', 'enabled', checked)}
+                  onCheckedChange={(checked) =>
+                    updatePopup("exitIntentPopup", "enabled", checked)
+                  }
                 />
               </div>
 
               <AdminInput
                 label="Popup Title"
                 value={popupsContent.exitIntentPopup.title}
-                onChange={(value) => updatePopup('exitIntentPopup', 'title', value)}
+                onChange={(value) =>
+                  updatePopup("exitIntentPopup", "title", value)
+                }
                 placeholder="Enter popup title"
                 required
               />
@@ -198,7 +234,9 @@ export function PopupsForm() {
                 label="Content Text"
                 type="textarea"
                 value={popupsContent.exitIntentPopup.content}
-                onChange={(value) => updatePopup('exitIntentPopup', 'content', value)}
+                onChange={(value) =>
+                  updatePopup("exitIntentPopup", "content", value)
+                }
                 placeholder="Enter popup content"
                 required
                 rows={3}
@@ -208,7 +246,9 @@ export function PopupsForm() {
                 <AdminInput
                   label="Button Text"
                   value={popupsContent.exitIntentPopup.buttonText}
-                  onChange={(value) => updatePopup('exitIntentPopup', 'buttonText', value)}
+                  onChange={(value) =>
+                    updatePopup("exitIntentPopup", "buttonText", value)
+                  }
                   placeholder="e.g., Subscribe Now"
                   required
                 />
@@ -217,7 +257,9 @@ export function PopupsForm() {
                   label="Button Link"
                   type="url"
                   value={popupsContent.exitIntentPopup.buttonLink}
-                  onChange={(value) => updatePopup('exitIntentPopup', 'buttonLink', value)}
+                  onChange={(value) =>
+                    updatePopup("exitIntentPopup", "buttonLink", value)
+                  }
                   placeholder="https://... or mailto:..."
                   required
                 />
@@ -226,21 +268,26 @@ export function PopupsForm() {
               <AdminInput
                 label="Email Link (Optional)"
                 type="email"
-                value={popupsContent.exitIntentPopup.emailLink || ''}
-                onChange={(value) => updatePopup('exitIntentPopup', 'emailLink', value)}
+                value={popupsContent.exitIntentPopup.emailLink || ""}
+                onChange={(value) =>
+                  updatePopup("exitIntentPopup", "emailLink", value)
+                }
                 placeholder="mailto:newsletter@example.com?subject=Newsletter"
                 description="Optional email link for newsletter subscription"
               />
 
               {/* Preview */}
               <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
-                <h4 className="text-sm font-semibold text-gray-700 mb-2">Preview</h4>
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                  Preview
+                </h4>
                 <div className="bg-white rounded-lg shadow-lg p-6 max-w-md border-l-4 border-orange-500">
                   <h3 className="text-lg font-bold mb-2">
                     {popupsContent.exitIntentPopup.title || "Exit Popup Title"}
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    {popupsContent.exitIntentPopup.content || "Exit popup content will appear here"}
+                    {popupsContent.exitIntentPopup.content ||
+                      "Exit popup content will appear here"}
                   </p>
                   <button className="bg-orange-600 text-white px-4 py-2 rounded-lg font-medium">
                     {popupsContent.exitIntentPopup.buttonText || "Button Text"}

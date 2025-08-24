@@ -93,12 +93,14 @@ export default function Index() {
 
   // Don't render until content is loaded
   if (!content) {
-    return <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading content...</p>
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading content...</p>
+        </div>
       </div>
-    </div>;
+    );
   }
 
   const { hero, benefits, trust, gallery, reviews, finalCTA, footer } = content;
@@ -139,14 +141,18 @@ export default function Index() {
 
   const nextImage = () => {
     if (content?.gallery?.images?.length) {
-      setCurrentImageIndex((prev) => (prev + 1) % content.gallery.images.length);
+      setCurrentImageIndex(
+        (prev) => (prev + 1) % content.gallery.images.length,
+      );
     }
   };
 
   const prevImage = () => {
     if (content?.gallery?.images?.length) {
       setCurrentImageIndex(
-        (prev) => (prev - 1 + content.gallery.images.length) % content.gallery.images.length,
+        (prev) =>
+          (prev - 1 + content.gallery.images.length) %
+          content.gallery.images.length,
       );
     }
   };
@@ -290,8 +296,9 @@ export default function Index() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {benefits.benefits.map((benefit, index) => {
-                const Icon = iconMap[benefit.iconName as keyof typeof iconMap] || Package;
-                
+                const Icon =
+                  iconMap[benefit.iconName as keyof typeof iconMap] || Package;
+
                 return (
                   <motion.div
                     key={benefit.id}
@@ -382,29 +389,33 @@ export default function Index() {
                   <h3 className="text-xl font-bold mb-2">
                     {trust.walmartTitle}
                   </h3>
-                  <p className="text-blue-100">
-                    {trust.walmartDescription}
-                  </p>
+                  <p className="text-blue-100">{trust.walmartDescription}</p>
                 </div>
 
                 {/* Seller Rating */}
                 <div className="text-center">
                   <div className="bg-white/20 backdrop-blur rounded-xl p-6">
-                    <h3 className="text-2xl font-bold mb-2">{trust.sellerTitle}</h3>
+                    <h3 className="text-2xl font-bold mb-2">
+                      {trust.sellerTitle}
+                    </h3>
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <div className="flex">
-                        {[...Array(Math.floor(trust.sellerRating))].map((_, i) => (
-                          <Star
-                            key={i}
-                            className="h-5 w-5 text-yellow-400 fill-current"
-                          />
-                        ))}
+                        {[...Array(Math.floor(trust.sellerRating))].map(
+                          (_, i) => (
+                            <Star
+                              key={i}
+                              className="h-5 w-5 text-yellow-400 fill-current"
+                            />
+                          ),
+                        )}
                         {trust.sellerRating % 1 !== 0 && (
                           <div className="relative">
                             <Star className="h-5 w-5 text-gray-300" />
                             <div
                               className="absolute inset-0 overflow-hidden"
-                              style={{ width: `${(trust.sellerRating % 1) * 100}%` }}
+                              style={{
+                                width: `${(trust.sellerRating % 1) * 100}%`,
+                              }}
                             >
                               <Star className="h-5 w-5 text-yellow-400 fill-current" />
                             </div>
@@ -412,7 +423,9 @@ export default function Index() {
                         )}
                       </div>
                     </div>
-                    <p className="text-blue-100">from {trust.sellerReviewCount} reviews</p>
+                    <p className="text-blue-100">
+                      from {trust.sellerReviewCount} reviews
+                    </p>
                   </div>
                 </div>
 
@@ -424,9 +437,7 @@ export default function Index() {
                   <h3 className="text-xl font-bold mb-2">
                     {trust.returnsTitle}
                   </h3>
-                  <p className="text-blue-100">
-                    {trust.returnsDescription}
-                  </p>
+                  <p className="text-blue-100">{trust.returnsDescription}</p>
                 </div>
               </div>
 
@@ -477,9 +488,7 @@ export default function Index() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   <div className="absolute bottom-4 left-4 text-white">
-                    <h3 className="font-semibold text-lg">
-                      {image.title}
-                    </h3>
+                    <h3 className="font-semibold text-lg">{image.title}</h3>
                   </div>
                 </motion.div>
               ))}
@@ -643,8 +652,10 @@ export default function Index() {
             </div>
             <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8">
               {footer.socialLinks.map((socialLink) => {
-                const Icon = iconMap[socialLink.iconName as keyof typeof iconMap] || Facebook;
-                
+                const Icon =
+                  iconMap[socialLink.iconName as keyof typeof iconMap] ||
+                  Facebook;
+
                 return (
                   <a
                     key={socialLink.id}
@@ -685,7 +696,8 @@ export default function Index() {
                       {hero.title}
                     </DialogTitle>
                     <DialogDescription className="text-sm sm:text-sm text-gray-600 mt-2 pr-8 sm:pr-0">
-                      View detailed product information, pricing, and purchase options.
+                      View detailed product information, pricing, and purchase
+                      options.
                     </DialogDescription>
                   </DialogHeader>
 
@@ -711,8 +723,13 @@ export default function Index() {
                   <div className="relative mb-4 sm:mb-6">
                     <div className="relative overflow-hidden rounded-xl shadow-lg bg-gray-50 mx-auto max-w-[280px] sm:max-w-none">
                       <img
-                        src={gallery.images[currentImageIndex]?.url || hero.mainImage}
-                        alt={gallery.images[currentImageIndex]?.alt || hero.title}
+                        src={
+                          gallery.images[currentImageIndex]?.url ||
+                          hero.mainImage
+                        }
+                        alt={
+                          gallery.images[currentImageIndex]?.alt || hero.title
+                        }
                         className="w-full h-40 sm:h-64 object-contain"
                         loading="lazy"
                         width={400}
@@ -865,7 +882,7 @@ export default function Index() {
               "@type": "Brand",
               name: "Gift-A-Snack",
             },
-            image: gallery.images.map(img => img.url),
+            image: gallery.images.map((img) => img.url),
             description: finalCTA.sectionDescription,
             sku: "GAS-42-NUTRITIOUS",
             aggregateRating: {

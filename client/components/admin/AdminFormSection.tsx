@@ -28,9 +28,7 @@ export function AdminFormSection({
           <p className="text-sm text-gray-600 mt-1">{description}</p>
         )}
       </CardHeader>
-      <CardContent className="space-y-4">
-        {children}
-      </CardContent>
+      <CardContent className="space-y-4">{children}</CardContent>
     </Card>
   );
 }

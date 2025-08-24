@@ -66,10 +66,12 @@ const ReviewCard = ({
 );
 
 export function CustomerReviewsDynamic() {
-  const [reviewsContent, setReviewsContent] = useState<ReviewsContent | null>(null);
+  const [reviewsContent, setReviewsContent] = useState<ReviewsContent | null>(
+    null,
+  );
 
   useEffect(() => {
-    const content = ContentStorage.getSectionContent('reviews');
+    const content = ContentStorage.getSectionContent("reviews");
     setReviewsContent(content);
   }, []);
 
@@ -78,7 +80,10 @@ export function CustomerReviewsDynamic() {
   }
 
   // Double the array for seamless infinite scroll
-  const extendedReviews = [...reviewsContent.reviews, ...reviewsContent.reviews];
+  const extendedReviews = [
+    ...reviewsContent.reviews,
+    ...reviewsContent.reviews,
+  ];
 
   return (
     <section className="relative py-16 sm:py-20 bg-gray-50">

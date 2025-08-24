@@ -66,10 +66,12 @@ export function AdminImageUpload({
       {/* Image Preview */}
       {value && !isEditing && (
         <div className="relative group">
-          <div className={cn(
-            "relative border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50",
-            aspectRatioClasses[aspectRatio]
-          )}>
+          <div
+            className={cn(
+              "relative border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50",
+              aspectRatioClasses[aspectRatio],
+            )}
+          >
             {!imageError ? (
               <img
                 src={value}
@@ -83,11 +85,13 @@ export function AdminImageUpload({
                 <div className="text-center">
                   <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-500">Failed to load image</p>
-                  <p className="text-xs text-gray-400 break-all px-2">{value}</p>
+                  <p className="text-xs text-gray-400 break-all px-2">
+                    {value}
+                  </p>
                 </div>
               </div>
             )}
-            
+
             {/* Overlay with action buttons */}
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
               <div className="flex gap-2">
@@ -115,7 +119,7 @@ export function AdminImageUpload({
                     type="button"
                     size="sm"
                     variant="outline"
-                    onClick={() => window.open(value, '_blank')}
+                    onClick={() => window.open(value, "_blank")}
                     className="bg-white hover:bg-gray-100"
                   >
                     <ExternalLink className="h-4 w-4" />
@@ -135,10 +139,10 @@ export function AdminImageUpload({
               placeholder="Enter image URL (https://...)"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleUrlSubmit()}
+              onKeyDown={(e) => e.key === "Enter" && handleUrlSubmit()}
               className="flex-1"
             />
-            <Button 
+            <Button
               type="button"
               onClick={handleUrlSubmit}
               disabled={!urlInput.trim()}
@@ -147,7 +151,7 @@ export function AdminImageUpload({
               Add
             </Button>
             {isEditing && (
-              <Button 
+              <Button
                 type="button"
                 variant="outline"
                 onClick={() => {
@@ -165,10 +169,10 @@ export function AdminImageUpload({
 
       {/* Upload area when no image */}
       {!value && !isEditing && (
-        <div 
+        <div
           className={cn(
             "border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors cursor-pointer bg-gray-50 hover:bg-gray-100",
-            aspectRatioClasses[aspectRatio]
+            aspectRatioClasses[aspectRatio],
           )}
           onClick={() => setIsEditing(true)}
         >
@@ -182,9 +186,7 @@ export function AdminImageUpload({
         </div>
       )}
 
-      {description && (
-        <p className="text-xs text-gray-500">{description}</p>
-      )}
+      {description && <p className="text-xs text-gray-500">{description}</p>}
     </div>
   );
 }

@@ -9,30 +9,31 @@ import { HeroContent } from "@shared/admin-content-types";
 import { useToast } from "@/hooks/use-toast";
 
 export function HeroForm() {
-  const [heroContent, setHeroContent] = useState<HeroContent>(() => 
-    ContentStorage.getSectionContent('hero')
+  const [heroContent, setHeroContent] = useState<HeroContent>(() =>
+    ContentStorage.getSectionContent("hero"),
   );
-  const [originalContent, setOriginalContent] = useState<HeroContent>(heroContent);
+  const [originalContent, setOriginalContent] =
+    useState<HeroContent>(heroContent);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const content = ContentStorage.getSectionContent('hero');
+    const content = ContentStorage.getSectionContent("hero");
     setHeroContent(content);
     setOriginalContent(content);
   }, []);
 
   const updateField = <K extends keyof HeroContent>(
-    field: K, 
-    value: HeroContent[K]
+    field: K,
+    value: HeroContent[K],
   ) => {
-    setHeroContent(prev => ({ ...prev, [field]: value }));
+    setHeroContent((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const success = ContentStorage.updateSectionContent('hero', heroContent);
+      const success = ContentStorage.updateSectionContent("hero", heroContent);
       if (success) {
         setOriginalContent(heroContent);
         toast({
@@ -45,7 +46,8 @@ export function HeroForm() {
     } catch (error) {
       toast({
         title: "Error saving changes",
-        description: "There was a problem saving your changes. Please try again.",
+        description:
+          "There was a problem saving your changes. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -61,7 +63,8 @@ export function HeroForm() {
     });
   };
 
-  const hasChanges = JSON.stringify(heroContent) !== JSON.stringify(originalContent);
+  const hasChanges =
+    JSON.stringify(heroContent) !== JSON.stringify(originalContent);
 
   return (
     <div className="space-y-6">
@@ -77,7 +80,7 @@ export function HeroForm() {
               label="Product Title"
               type="textarea"
               value={heroContent.title}
-              onChange={(value) => updateField('title', value as string)}
+              onChange={(value) => updateField("title", value as string)}
               placeholder="Enter the main product title"
               required
               rows={3}
@@ -89,7 +92,7 @@ export function HeroForm() {
                 label="Rating"
                 type="number"
                 value={heroContent.rating}
-                onChange={(value) => updateField('rating', value as number)}
+                onChange={(value) => updateField("rating", value as number)}
                 min={0}
                 max={5}
                 step={0.1}
@@ -101,7 +104,9 @@ export function HeroForm() {
                 label="Review Count"
                 type="number"
                 value={heroContent.reviewCount}
-                onChange={(value) => updateField('reviewCount', value as number)}
+                onChange={(value) =>
+                  updateField("reviewCount", value as number)
+                }
                 min={0}
                 required
                 description="Number of reviews"
@@ -113,7 +118,7 @@ export function HeroForm() {
                 label="Sale Price"
                 type="number"
                 value={heroContent.salePrice}
-                onChange={(value) => updateField('salePrice', value as number)}
+                onChange={(value) => updateField("salePrice", value as number)}
                 min={0}
                 step={0.01}
                 required
@@ -124,7 +129,9 @@ export function HeroForm() {
                 label="Regular Price"
                 type="number"
                 value={heroContent.regularPrice}
-                onChange={(value) => updateField('regularPrice', value as number)}
+                onChange={(value) =>
+                  updateField("regularPrice", value as number)
+                }
                 min={0}
                 step={0.01}
                 required
@@ -136,7 +143,7 @@ export function HeroForm() {
               label="Walmart URL"
               type="url"
               value={heroContent.walmartUrl}
-              onChange={(value) => updateField('walmartUrl', value as string)}
+              onChange={(value) => updateField("walmartUrl", value as string)}
               placeholder="https://www.walmart.com/..."
               required
               description="Link to the product page on Walmart"
@@ -148,7 +155,7 @@ export function HeroForm() {
             <AdminImageUpload
               label="Hero Image"
               value={heroContent.mainImage}
-              onChange={(value) => updateField('mainImage', value)}
+              onChange={(value) => updateField("mainImage", value)}
               required
               aspectRatio="landscape"
               description="Main product image displayed in the hero section"

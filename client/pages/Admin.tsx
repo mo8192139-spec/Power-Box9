@@ -4,7 +4,12 @@ import { SEOForm } from "@/components/admin/SEOForm";
 import { HeroForm } from "@/components/admin/HeroForm";
 import { BenefitsForm } from "@/components/admin/BenefitsForm";
 import { TrustForm } from "@/components/admin/TrustForm";
-import { GalleryForm, ReviewsForm, FinalCTAForm, FooterForm } from "@/components/admin/OtherForms";
+import {
+  GalleryForm,
+  ReviewsForm,
+  FinalCTAForm,
+  FooterForm,
+} from "@/components/admin/OtherForms";
 import { PopupsForm } from "@/components/admin/PopupsForm";
 import { ContentStorage } from "@/lib/content-storage";
 import { defaultSiteContent } from "@shared/admin-content-types";
@@ -42,13 +47,13 @@ export default function Admin() {
   const handleExport = () => {
     try {
       const content = ContentStorage.exportContent();
-      
+
       // Create and download file
-      const blob = new Blob([content], { type: 'application/json' });
+      const blob = new Blob([content], { type: "application/json" });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = `site-content-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `site-content-${new Date().toISOString().split("T")[0]}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -84,9 +89,10 @@ export default function Admin() {
         setImportContent("");
         toast({
           title: "Content imported",
-          description: "Site content has been imported successfully. Please refresh the page to see changes.",
+          description:
+            "Site content has been imported successfully. Please refresh the page to see changes.",
         });
-        
+
         // Refresh the page to load new content
         setTimeout(() => {
           window.location.reload();
@@ -97,7 +103,8 @@ export default function Admin() {
     } catch (error) {
       toast({
         title: "Import failed",
-        description: "There was an error importing the content. Please check the JSON format.",
+        description:
+          "There was an error importing the content. Please check the JSON format.",
         variant: "destructive",
       });
     }
@@ -109,9 +116,10 @@ export default function Admin() {
       setShowResetDialog(false);
       toast({
         title: "Content reset",
-        description: "All content has been reset to defaults. Please refresh the page.",
+        description:
+          "All content has been reset to defaults. Please refresh the page.",
       });
-      
+
       // Refresh the page to load default content
       setTimeout(() => {
         window.location.reload();
@@ -126,7 +134,7 @@ export default function Admin() {
   };
 
   const handlePreview = () => {
-    window.open('/', '_blank');
+    window.open("/", "_blank");
   };
 
   const renderActiveSection = () => {
@@ -175,7 +183,7 @@ export default function Admin() {
               Content Management
             </h1>
             <p className="text-gray-600">
-              Edit your site content and see changes in real-time. 
+              Edit your site content and see changes in real-time.
               <Button
                 variant="link"
                 onClick={handlePreview}
@@ -187,9 +195,7 @@ export default function Admin() {
           </div>
 
           {/* Active Section Content */}
-          <div className="max-w-4xl">
-            {renderActiveSection()}
-          </div>
+          <div className="max-w-4xl">{renderActiveSection()}</div>
         </div>
       </div>
 
@@ -202,10 +208,11 @@ export default function Admin() {
               Import Content
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Paste the exported JSON content below to import it. This will replace all current content.
+              Paste the exported JSON content below to import it. This will
+              replace all current content.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          
+
           <div className="space-y-4">
             <div>
               <Label htmlFor="import-content">JSON Content</Label>
@@ -224,7 +231,7 @@ export default function Admin() {
             <AlertDialogCancel onClick={() => setImportContent("")}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleImport}
               className="bg-blue-600 hover:bg-blue-700"
             >
@@ -243,23 +250,19 @@ export default function Admin() {
               Reset All Content
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to reset ALL content to the default state? 
-              This will permanently delete all your customizations and cannot be undone.
-              Consider exporting your current content before proceeding.
+              Are you sure you want to reset ALL content to the default state?
+              This will permanently delete all your customizations and cannot be
+              undone. Consider exporting your current content before proceeding.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <Button
-              onClick={handleExport}
-              variant="outline"
-              className="mr-2"
-            >
+            <Button onClick={handleExport} variant="outline" className="mr-2">
               <Download className="h-4 w-4 mr-2" />
               Export First
             </Button>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleResetAll}
               className="bg-red-600 hover:bg-red-700"
             >
