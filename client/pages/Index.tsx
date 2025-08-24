@@ -80,6 +80,17 @@ export default function Index() {
     },
   });
 
+  // Keyboard event handling - moved before early return to comply with Rules of Hooks
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsModalOpen(false);
+    };
+    if (isModalOpen) {
+      document.addEventListener("keydown", handleEsc);
+      return () => document.removeEventListener("keydown", handleEsc);
+    }
+  }, [isModalOpen]);
+
   // Don't render until content is loaded
   if (!content) {
     return <div className="min-h-screen bg-gray-100 flex items-center justify-center">
