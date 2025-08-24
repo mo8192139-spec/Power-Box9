@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
 export default function Admin() {
-  const [activeSection, setActiveSection] = useState("hero");
+  const [activeSection, setActiveSection] = useState("seo");
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [importContent, setImportContent] = useState("");
