@@ -74,7 +74,37 @@ export interface FooterContent {
   socialLinks: SocialLink[];
 }
 
+export interface SEOContent {
+  metaTitle: string;
+  metaDescription: string;
+  metaKeywords: string;
+}
+
+export interface PopupContent {
+  id: string;
+  type: 'button-triggered' | 'exit-intent';
+  title: string;
+  content: string;
+  buttonText: string;
+  buttonLink: string;
+  emailLink?: string;
+  enabled: boolean;
+}
+
+export interface PopupsContent {
+  buttonTriggeredPopup: PopupContent;
+  exitIntentPopup: PopupContent;
+}
+
+export interface Button {
+  id: string;
+  text: string;
+  link: string;
+  type: 'primary' | 'secondary' | 'outline';
+}
+
 export interface SiteContent {
+  seo: SEOContent;
   hero: HeroContent;
   benefits: BenefitsContent;
   trust: TrustContent;
@@ -82,6 +112,7 @@ export interface SiteContent {
   reviews: ReviewsContent;
   finalCTA: FinalCTAContent;
   footer: FooterContent;
+  popups: PopupsContent;
 }
 
 // Default content structure for initialization
