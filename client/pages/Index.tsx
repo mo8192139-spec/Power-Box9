@@ -127,13 +127,17 @@ export default function Index() {
   };
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % gallery.images.length);
+    if (content?.gallery?.images?.length) {
+      setCurrentImageIndex((prev) => (prev + 1) % content.gallery.images.length);
+    }
   };
 
   const prevImage = () => {
-    setCurrentImageIndex(
-      (prev) => (prev - 1 + gallery.images.length) % gallery.images.length,
-    );
+    if (content?.gallery?.images?.length) {
+      setCurrentImageIndex(
+        (prev) => (prev - 1 + content.gallery.images.length) % content.gallery.images.length,
+      );
+    }
   };
 
   useEffect(() => {
