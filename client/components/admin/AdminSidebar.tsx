@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { 
-  Home, 
-  Star, 
-  Shield, 
-  Image, 
-  MessageCircle, 
-  Megaphone, 
+import {
+  Home,
+  Star,
+  Shield,
+  Image,
+  MessageCircle,
+  Megaphone,
   Link,
   Menu,
   X,
@@ -13,7 +13,9 @@ import {
   Download,
   Upload,
   RotateCcw,
-  Eye
+  Eye,
+  Search,
+  Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
