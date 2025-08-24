@@ -1,407 +1,267 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import {
-  Settings,
-  FileText,
-  Star,
-  Users,
-  Image,
-  Link,
-  MessageSquare,
-  Search,
-  Eye,
-  Save,
-  RotateCcw,
-  Home,
-  Menu,
-  X,
-  ChevronRight,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-import {
-  defaultLandingPageData,
-  type LandingPageData,
-} from "@shared/admin-types";
-
-// Import admin form components (we'll create these next)
+import { useState, useEffect } from "react";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { HeroForm } from "@/components/admin/HeroForm";
-import { FeaturesForm } from "@/components/admin/FeaturesForm";
-import { TestimonialsForm } from "@/components/admin/TestimonialsForm";
-import { SEOForm } from "@/components/admin/SEOForm";
-import { LinksForm } from "@/components/admin/LinksForm";
-import { RatingForm } from "@/components/admin/RatingForm";
-import { PopupsForm } from "@/components/admin/PopupsForm";
-import { PreviewPanel } from "@/components/admin/PreviewPanel";
-
-type AdminSection =
-  | "hero"
-  | "features"
-  | "testimonials"
-  | "seo"
-  | "links"
-  | "rating"
-  | "popups"
-  | "preview";
-
-interface SidebarItem {
-  id: AdminSection;
-  label: string;
-  icon: React.ElementType;
-  description: string;
-  badge?: string;
-}
-
-const sidebarItems: SidebarItem[] = [
-  {
-    id: "hero",
-    label: "Hero Section",
-    icon: FileText,
-    description: "Edit main headline, pricing, and CTA buttons",
-    badge: "Essential",
-  },
-  {
-    id: "features",
-    label: "Features",
-    icon: Settings,
-    description: "Manage feature points, reorder, and toggle visibility",
-    badge: `${defaultLandingPageData.features.length} items`,
-  },
-  {
-    id: "testimonials",
-    label: "Testimonials",
-    icon: Users,
-    description: "Add, edit, and manage customer reviews",
-    badge: `${defaultLandingPageData.testimonials.length} reviews`,
-  },
-  {
-    id: "seo",
-    label: "SEO Settings",
-    icon: Search,
-    description: "Meta titles, descriptions, and social sharing",
-  },
-  {
-    id: "links",
-    label: "Links & Navigation",
-    icon: Link,
-    description: "Manage footer links, social media, and buttons",
-    badge: `${defaultLandingPageData.links.length} links`,
-  },
-  {
-    id: "rating",
-    label: "Rating Display",
-    icon: Star,
-    description: "Configure star ratings and review counts",
-  },
-  {
-    id: "popups",
-    label: "Popups & Modals",
-    icon: MessageSquare,
-    description: "Exit intent popups and promotional modals",
-    badge: defaultLandingPageData.popups.some((p) => p.enabled)
-      ? "Active"
-      : "Inactive",
-  },
-  {
-    id: "preview",
-    label: "Preview",
-    icon: Eye,
-    description: "See how your changes look on the live site",
-    badge: "Live",
-  },
-];
+import { BenefitsForm } from "@/components/admin/BenefitsForm";
+import { TrustForm } from "@/components/admin/TrustForm";
+import { GalleryForm, ReviewsForm, FinalCTAForm, FooterForm } from "@/components/admin/OtherForms";
+import { ContentStorage } from "@/lib/content-storage";
+import { defaultSiteContent } from "@shared/admin-content-types";
+import { Button } from "@/components/ui/button";
+import { Download, Upload, RotateCcw, Eye, AlertTriangle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 export default function Admin() {
-  const [activeSection, setActiveSection] = useState<AdminSection>("hero");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [data, setData] = useState<LandingPageData>(defaultLandingPageData);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [activeSection, setActiveSection] = useState("hero");
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [importContent, setImportContent] = useState("");
+  const { toast } = useToast();
 
-  const updateData = (section: keyof LandingPageData, newData: any) => {
-    setData((prev) => ({
-      ...prev,
-      [section]: newData,
-      lastUpdated: new Date().toISOString(),
-    }));
-    setHasUnsavedChanges(true);
-  };
+  // Initialize content if needed
+  useEffect(() => {
+    if (!ContentStorage.hasCustomContent()) {
+      ContentStorage.saveSiteContent(defaultSiteContent);
+    }
+  }, []);
 
-  const handleSave = async () => {
-    // TODO: Replace with actual API call to save data
-    console.log("Saving data:", data);
-    setHasUnsavedChanges(false);
-    // Show success toast
-  };
+  const handleExport = () => {
+    try {
+      const content = ContentStorage.exportContent();
+      
+      // Create and download file
+      const blob = new Blob([content], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `site-content-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-  const handleReset = () => {
-    setData(defaultLandingPageData);
-    setHasUnsavedChanges(false);
-  };
-
-  const renderActiveForm = () => {
-    switch (activeSection) {
-      case "hero":
-        return (
-          <HeroForm
-            data={data.hero}
-            onChange={(heroData) => updateData("hero", heroData)}
-          />
-        );
-      case "features":
-        return (
-          <FeaturesForm
-            data={data.features}
-            onChange={(featuresData) => updateData("features", featuresData)}
-          />
-        );
-      case "testimonials":
-        return (
-          <TestimonialsForm
-            data={data.testimonials}
-            onChange={(testimonialsData) =>
-              updateData("testimonials", testimonialsData)
-            }
-          />
-        );
-      case "seo":
-        return (
-          <SEOForm
-            data={data.seo}
-            onChange={(seoData) => updateData("seo", seoData)}
-          />
-        );
-      case "links":
-        return (
-          <LinksForm
-            data={data.links}
-            onChange={(linksData) => updateData("links", linksData)}
-          />
-        );
-      case "rating":
-        return (
-          <RatingForm
-            data={data.rating}
-            onChange={(ratingData) => updateData("rating", ratingData)}
-          />
-        );
-      case "popups":
-        return (
-          <PopupsForm
-            data={data.popups}
-            onChange={(popupsData) => updateData("popups", popupsData)}
-          />
-        );
-      case "preview":
-        return <PreviewPanel data={data} />;
-      default:
-        return <div>Section not found</div>;
+      toast({
+        title: "Content exported",
+        description: "Site content has been exported successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: "There was an error exporting the content.",
+        variant: "destructive",
+      });
     }
   };
 
-  const activeItem = sidebarItems.find((item) => item.id === activeSection);
+  const handleImport = () => {
+    try {
+      if (!importContent.trim()) {
+        toast({
+          title: "No content provided",
+          description: "Please paste the JSON content to import.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const success = ContentStorage.importContent(importContent);
+      if (success) {
+        setShowImportDialog(false);
+        setImportContent("");
+        toast({
+          title: "Content imported",
+          description: "Site content has been imported successfully. Please refresh the page to see changes.",
+        });
+        
+        // Refresh the page to load new content
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        throw new Error("Import failed");
+      }
+    } catch (error) {
+      toast({
+        title: "Import failed",
+        description: "There was an error importing the content. Please check the JSON format.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleResetAll = () => {
+    try {
+      ContentStorage.resetContent();
+      setShowResetDialog(false);
+      toast({
+        title: "Content reset",
+        description: "All content has been reset to defaults. Please refresh the page.",
+      });
+      
+      // Refresh the page to load default content
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      toast({
+        title: "Reset failed",
+        description: "There was an error resetting the content.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePreview = () => {
+    window.open('/', '_blank');
+  };
+
+  const renderActiveSection = () => {
+    switch (activeSection) {
+      case "hero":
+        return <HeroForm />;
+      case "benefits":
+        return <BenefitsForm />;
+      case "trust":
+        return <TrustForm />;
+      case "gallery":
+        return <GalleryForm />;
+      case "reviews":
+        return <ReviewsForm />;
+      case "finalCTA":
+        return <FinalCTAForm />;
+      case "footer":
+        return <FooterForm />;
+      default:
+        return <HeroForm />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       {/* Sidebar */}
-      <motion.aside
-        initial={false}
-        animate={{ x: sidebarOpen ? 0 : -320 }}
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-xl lg:translate-x-0 lg:static lg:inset-0",
-          "lg:block",
-        )}
-      >
-        <div className="flex h-full flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">
-                Admin Dashboard
-              </h1>
-              <p className="text-sm text-gray-500">Landing Page Editor</p>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="p-6 border-b bg-gray-50">
-            <div className="space-y-2">
-              <Button
-                onClick={handleSave}
-                className="w-full"
-                disabled={!hasUnsavedChanges}
-              >
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
-                {hasUnsavedChanges && (
-                  <Badge variant="destructive" className="ml-auto">
-                    Unsaved
-                  </Badge>
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                className="w-full"
-              >
-                <RotateCcw className="mr-2 h-4 w-4" />
-                Reset to Default
-              </Button>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-4">
-            <div className="space-y-2">
-              {sidebarItems.map((item) => (
-                <Button
-                  key={item.id}
-                  variant={activeSection === item.id ? "default" : "ghost"}
-                  className={cn(
-                    "w-full justify-start h-auto p-4",
-                    activeSection === item.id
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : "text-gray-700 hover:bg-gray-100",
-                  )}
-                  onClick={() => {
-                    setActiveSection(item.id);
-                    setSidebarOpen(false);
-                  }}
-                >
-                  <div className="flex items-center w-full">
-                    <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
-                    <div className="flex-1 text-left">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{item.label}</span>
-                        {item.badge && (
-                          <Badge
-                            variant={
-                              activeSection === item.id
-                                ? "secondary"
-                                : "outline"
-                            }
-                            className="text-xs"
-                          >
-                            {item.badge}
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-xs opacity-80 mt-1">
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-                </Button>
-              ))}
-            </div>
-          </nav>
-
-          {/* Footer */}
-          <div className="border-t p-4">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => window.open("/", "_blank")}
-            >
-              <Home className="mr-2 h-4 w-4" />
-              View Live Site
-            </Button>
-          </div>
-        </div>
-      </motion.aside>
+      <AdminSidebar
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
+        onExport={handleExport}
+        onImport={() => setShowImportDialog(true)}
+        onResetAll={() => setShowResetDialog(true)}
+        onPreview={handlePreview}
+      />
 
       {/* Main Content */}
       <div className="lg:ml-80">
-        {/* Top bar */}
-        <header className="bg-white border-b px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="p-4 lg:p-8">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Content Management
+            </h1>
+            <p className="text-gray-600">
+              Edit your site content and see changes in real-time. 
               <Button
-                variant="ghost"
-                size="sm"
-                className="lg:hidden"
-                onClick={() => setSidebarOpen(true)}
+                variant="link"
+                onClick={handlePreview}
+                className="p-0 h-auto ml-1 text-blue-600"
               >
-                <Menu className="h-5 w-5" />
+                Preview your site
               </Button>
+            </p>
+          </div>
 
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span>Admin</span>
-                <ChevronRight className="h-4 w-4" />
-                <span className="text-gray-900 font-medium">
-                  {activeItem?.label || "Dashboard"}
-                </span>
-              </div>
-            </div>
+          {/* Active Section Content */}
+          <div className="max-w-4xl">
+            {renderActiveSection()}
+          </div>
+        </div>
+      </div>
 
-            <div className="flex items-center gap-3">
-              {hasUnsavedChanges && (
-                <Badge variant="destructive" className="animate-pulse">
-                  Unsaved Changes
-                </Badge>
-              )}
-              <Badge variant="outline">
-                Last updated: {new Date(data.lastUpdated).toLocaleTimeString()}
-              </Badge>
+      {/* Import Dialog */}
+      <AlertDialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+        <AlertDialogContent className="max-w-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5" />
+              Import Content
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Paste the exported JSON content below to import it. This will replace all current content.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="import-content">JSON Content</Label>
+              <Textarea
+                id="import-content"
+                placeholder="Paste exported JSON content here..."
+                value={importContent}
+                onChange={(e) => setImportContent(e.target.value)}
+                rows={10}
+                className="font-mono text-sm"
+              />
             </div>
           </div>
-        </header>
 
-        {/* Page Content */}
-        <main className="p-6">
-          <motion.div
-            key={activeSection}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Section Header */}
-            <div className="mb-6">
-              <div className="flex items-center gap-3 mb-2">
-                {activeItem?.icon && (
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <activeItem.icon className="h-6 w-6 text-blue-600" />
-                  </div>
-                )}
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    {activeItem?.label}
-                  </h2>
-                  <p className="text-gray-600">{activeItem?.description}</p>
-                </div>
-              </div>
-              <Separator />
-            </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setImportContent("")}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleImport}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Import Content
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-            {/* Form Content */}
-            <div className="max-w-4xl">{renderActiveForm()}</div>
-          </motion.div>
-        </main>
-      </div>
+      {/* Reset All Dialog */}
+      <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-500" />
+              Reset All Content
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to reset ALL content to the default state? 
+              This will permanently delete all your customizations and cannot be undone.
+              Consider exporting your current content before proceeding.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <Button
+              onClick={handleExport}
+              variant="outline"
+              className="mr-2"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export First
+            </Button>
+            <AlertDialogAction 
+              onClick={handleResetAll}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Reset Everything
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
