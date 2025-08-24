@@ -117,6 +117,11 @@ export interface SiteContent {
 
 // Default content structure for initialization
 export const defaultSiteContent: SiteContent = {
+  seo: {
+    metaTitle: "Nutritious Snack Box with Breakfast Bars and Delicious Chips | Gift A Snack (42 Count)",
+    metaDescription: "Get your 42-count nutritious snack box today! Perfect mix of breakfast bars and savory snacks. High-quality packaging, fast delivery, and satisfaction guaranteed.",
+    metaKeywords: "snack box, healthy snacks, breakfast bars, gift box, nutritious snacks, office snacks, college care package"
+  },
   hero: {
     title: "Nutritious Snack Box with Breakfast Bars and Delicious Chips | Gift A Snack (42 Count)",
     rating: 4.6,
