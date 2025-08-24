@@ -496,7 +496,7 @@ export default function Index() {
         </motion.section>
 
         {/* Customer Reviews Section */}
-        <CustomerReviews />
+        <CustomerReviewsDynamic />
 
         {/* Final CTA Section */}
         <motion.section
