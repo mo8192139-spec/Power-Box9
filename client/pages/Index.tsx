@@ -70,6 +70,16 @@ export default function Index() {
     setContent(storedContent);
   }, []);
 
+  // Exit intent detection - moved before early return to comply with Rules of Hooks
+  useExitIntent({
+    enabled: !showExitIntent && !isModalOpen && !!content, // Only enable when content is loaded
+    sensitivity: 20,
+    delayInMs: 100,
+    onExitIntent: () => {
+      setShowExitIntent(true);
+    },
+  });
+
   // Don't render until content is loaded
   if (!content) {
     return <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -86,16 +96,6 @@ export default function Index() {
     console.log(`Buy clicked from: ${location}`);
     handleProceedToWalmart();
   };
-
-  // Exit intent detection
-  useExitIntent({
-    enabled: !showExitIntent && !isModalOpen,
-    sensitivity: 20,
-    delayInMs: 100,
-    onExitIntent: () => {
-      setShowExitIntent(true);
-    },
-  });
 
   const handleCloseExitIntent = () => {
     setShowExitIntent(false);
