@@ -262,5 +262,27 @@ export const defaultSiteContent: SiteContent = {
       { id: "twitter", platform: "Twitter", url: "https://twitter.com", iconName: "Twitter" },
       { id: "youtube", platform: "YouTube", url: "https://youtube.com", iconName: "Youtube" }
     ]
+  },
+  popups: {
+    buttonTriggeredPopup: {
+      id: "button-popup",
+      type: "button-triggered",
+      title: "Special Offer!",
+      content: "Get 20% off your first order when you sign up for our newsletter. Don't miss out on this limited-time offer!",
+      buttonText: "Claim Offer",
+      buttonLink: "https://www.walmart.com/ip/Healthy-Snack-Box-Tasty-Nutrient-Rich-Variety-42-Count-by-Gift-A-Snack/14479818419",
+      emailLink: "mailto:offers@giftasnack.com?subject=Newsletter Signup",
+      enabled: true
+    },
+    exitIntentPopup: {
+      id: "exit-popup",
+      type: "exit-intent",
+      title: "Wait! Don't Leave Empty-Handed",
+      content: "Subscribe to our newsletter and get exclusive deals on healthy snacks delivered to your inbox!",
+      buttonText: "Subscribe Now",
+      buttonLink: "mailto:newsletter@giftasnack.com?subject=Newsletter Subscription",
+      emailLink: "mailto:newsletter@giftasnack.com?subject=Newsletter Subscription",
+      enabled: true
+    }
   }
 };
