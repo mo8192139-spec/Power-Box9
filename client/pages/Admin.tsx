@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { SEOForm } from "@/components/admin/SEOForm";
 import { HeroForm } from "@/components/admin/HeroForm";
 import { BenefitsForm } from "@/components/admin/BenefitsForm";
 import { TrustForm } from "@/components/admin/TrustForm";
 import { GalleryForm, ReviewsForm, FinalCTAForm, FooterForm } from "@/components/admin/OtherForms";
+import { PopupsForm } from "@/components/admin/PopupsForm";
 import { ContentStorage } from "@/lib/content-storage";
 import { defaultSiteContent } from "@shared/admin-content-types";
 import { Button } from "@/components/ui/button";
