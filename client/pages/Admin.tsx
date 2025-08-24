@@ -131,6 +131,8 @@ export default function Admin() {
 
   const renderActiveSection = () => {
     switch (activeSection) {
+      case "seo":
+        return <SEOForm />;
       case "hero":
         return <HeroForm />;
       case "benefits":
@@ -143,10 +145,12 @@ export default function Admin() {
         return <ReviewsForm />;
       case "finalCTA":
         return <FinalCTAForm />;
+      case "popups":
+        return <PopupsForm />;
       case "footer":
         return <FooterForm />;
       default:
-        return <HeroForm />;
+        return <SEOForm />;
     }
   };
 
